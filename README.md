@@ -100,12 +100,136 @@ import { getLogger } from '@intangles/telemetry';
 
 const logger = getLogger('my-component');
 
+// Basic info logging
+logger.info('Processing request', attributes: { userId: '123', endpoint: '/api/users' });
+
+// Debug logging with detailed context
+logger.debug('Database query executed',
+  attributes: {
+    query: 'SELECT * FROM users WHERE id = ?',
+    duration: 45,
+    rows: 1
+  }
+);
+
+// Warning with business context
+logger.warn(
+  'Rate limit approaching threshold',
+  attributes: {
+    currentRequests: 85,
+    threshold: 100,
+    window: '1m'
+  }
+);
+
+// Error logging with exception details
+logger.error(
+  'Failed to process payment',
+  attributes: {
+    error: 'Payment gateway timeout',
+    orderId: 'ORD-12345',
+    amount: 99.99,
+    retryCount: 2
+  }
+);
+
+// Critical system error
 logger.emit({
-  severityNumber: 9, // INFO
-  severityText: 'INFO',
-  body: 'Processing request',
-  attributes: { userId: '123' }
+  severityNumber: 21, // FATAL
+  severityText: 'FATAL',
+  body: 'Database connection lost',
+  attributes: {
+    database: 'postgres',
+    host: 'db.example.com',
+    impact: 'high'
+  }
 });
+```
+
+#### Severity Levels
+
+The `severityNumber` follows OpenTelemetry semantic conventions:
+
+- `1`: TRACE - Very detailed diagnostic information
+- `5`: DEBUG - Debug information for development
+- `9`: INFO - General information about application operation
+- `13`: WARN - Warning about potentially harmful situations
+- `17`: ERROR - Error conditions that don't stop the application
+- `21`: FATAL - Critical errors that may cause application failure
+
+#### Structured Logging
+
+Use `attributes` to add structured data to your logs:
+
+```typescript
+// HTTP request logging
+logger.emit({
+  severityNumber: 9,
+  severityText: 'INFO',
+  body: 'HTTP request received',
+  attributes: {
+    method: 'POST',
+    url: '/api/orders',
+    userAgent: 'Mozilla/5.0...',
+    ip: '192.168.1.1',
+    requestId: 'req-abc123',
+    contentLength: 1024
+  }
+});
+
+// Performance monitoring
+logger.emit({
+  severityNumber: 9,
+  severityText: 'INFO',
+  body: 'Operation completed',
+  attributes: {
+    operation: 'user_registration',
+    duration: 250, // milliseconds
+    success: true,
+    userType: 'premium'
+  }
+});
+
+// Business events
+logger.emit({
+  severityNumber: 9,
+  severityText: 'INFO',
+  body: 'Order placed successfully',
+  attributes: {
+    orderId: 'ORD-12345',
+    customerId: 'CUST-67890',
+    total: 149.99,
+    currency: 'USD',
+    items: 3
+  }
+});
+```
+
+#### Error Handling
+
+```typescript
+try {
+  // Some operation that might fail
+  await processPayment(orderData);
+  
+  logger.emit({
+    severityNumber: 9,
+    severityText: 'INFO',
+    body: 'Payment processed successfully',
+    attributes: { orderId: orderData.id, amount: orderData.total }
+  });
+} catch (error) {
+  logger.emit({
+    severityNumber: 17,
+    severityText: 'ERROR',
+    body: `Payment processing failed: ${error.message}`,
+    attributes: {
+      orderId: orderData.id,
+      errorType: error.constructor.name,
+      stack: error.stack?.substring(0, 500) // Truncate for readability
+    }
+  });
+}
 ```
 
 ### Metrics
@@ -128,6 +252,24 @@ const histogram = meter.createHistogram('request_duration', {
 histogram.record(0.5, { method: 'GET' });
 ```
 
+## Key Features
+
+- **Complete OpenTelemetry Abstraction**: No direct OpenTelemetry dependencies in consuming applications
+- **Simple API**: Clean, intuitive interfaces for tracing, logging, and metrics
+- **Auto-Instrumentation**: Automatic instrumentation of popular Node.js libraries
+- **Manual Instrumentation**: Full control over custom instrumentation
+- **Multiple Exporters**: Support for OTLP and console exporters
+- **TypeScript Support**: Full TypeScript definitions included
+
+## Dependency Benefits
+
+This library provides complete abstraction from OpenTelemetry, meaning consuming applications:
+
+- **No OTEL Dependencies**: Applications don't need to install or manage OpenTelemetry packages
+- **Future-Proof**: Can upgrade OpenTelemetry versions without affecting consumers
+- **Simplified Maintenance**: Single source of truth for telemetry configuration
+- **Clean Architecture**: Telemetry concerns are separated from business logic
+
 ## Configuration
 
 The `initInstrumentation` function accepts an `InstrumentationConfig` object with the following properties:
@@ -139,7 +281,27 @@ The `initInstrumentation` function accepts an `InstrumentationConfig` object wit
   - `logs`: 'otlp' | 'console'
   - `metrics`: 'otlp' | 'console'
 - `endpoints`: object (optional) - Configure exporter endpoints
-- `autoInstrument`: boolean (optional) - Enable auto-instrumentation
+  - `otlp`: string - OTLP endpoint URL (default: 'http://localhost:4318')
+- `autoInstrument`: boolean (optional) - Enable auto-instrumentation (default: false)
+
+## API Reference
+
+### Functions
+
+- `initInstrumentation(config: InstrumentationConfig): InstrumentationManager` - Initialize telemetry
+- `getTracer(name: string): Tracer | undefined` - Get a tracer instance
+- `getLogger(name: string): Logger | undefined` - Get a logger instance  
+- `getMeter(name: string): Meter | undefined` - Get a meter instance
+
+### Types
+
+- `InstrumentationConfig` - Configuration interface
+- `Tracer` - Tracing interface with `startSpan()` and `startActiveSpan()` methods
+- `Span` - Span interface with `setAttribute()`, `addEvent()`, `setStatus()`, `end()` methods
+- `Logger` - Logging interface with `emit()` method
+- `LogRecord` - Log record structure with severity, body, and attributes
+- `Meter` - Metrics interface with instrument creation methods
+- `Counter`, `Histogram`, `UpDownCounter` - Metric instrument interfaces
 
 ## Supported Exporters
 
