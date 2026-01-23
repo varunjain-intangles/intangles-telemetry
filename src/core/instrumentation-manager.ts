@@ -11,6 +11,7 @@ import {
 } from "@opentelemetry/semantic-conventions";
 import { CustomTracer } from "./custom-tracer";
 import { CustomLogger } from "./custom-logger";
+import { CustomMeter } from "./custom-meter";
 
 export class InstrumentationManager {
   private static instance: InstrumentationManager | null = null;
@@ -100,7 +101,8 @@ export class InstrumentationManager {
     if (this.config.autoInstrument) {
       // When using NodeSdk, get meter from global API
       const { metrics } = require("@opentelemetry/api");
-      return metrics.getMeter(name);
+      const otelMeter = metrics.getMeter(name);
+      return new CustomMeter(otelMeter);
     }
     return this.metricProvider?.getMeter(name);
   }

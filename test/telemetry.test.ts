@@ -40,7 +40,8 @@ describe('Telemetry Library', () => {
 
       const meter = getMeter('test-component');
       expect(meter).toBeDefined();
-      expect(typeof meter.createCounter).toBe('function');
+      expect(meter).toBeTruthy();
+      expect(typeof meter!.createCounter).toBe('function');
     });
 
     test('should provide logger instance', () => {
@@ -80,7 +81,9 @@ describe('Telemetry Library', () => {
       });
 
       const meter = getMeter('test-component');
-      const counter = meter.createCounter('test_counter', {
+      expect(meter).toBeDefined();
+      
+      const counter = meter!.createCounter('test_counter', {
         description: 'Test counter'
       });
 
@@ -127,7 +130,7 @@ describe('Telemetry Library', () => {
 
       const meter = getMeter('test-component');
       expect(meter).toBeDefined();
-      expect(typeof meter.createCounter).toBe('function');
+      expect(typeof meter!.createCounter).toBe('function');
     });
 
     test('should provide logger instance in auto mode', () => {

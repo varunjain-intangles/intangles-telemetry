@@ -13,6 +13,7 @@ import {
   ATTR_SERVICE_NAME,
   ATTR_SERVICE_VERSION,
 } from "@opentelemetry/semantic-conventions";
+import { CustomMeter } from "../core/custom-meter";
 
 export class MetricProvider {
   private config: InstrumentationConfig;
@@ -64,6 +65,7 @@ export class MetricProvider {
   }
 
   getMeter(name: string) {
-    return this.provider?.getMeter(name);
+    const otelMeter = this.provider?.getMeter(name);
+    return otelMeter ? new CustomMeter(otelMeter) : undefined;
   }
 }

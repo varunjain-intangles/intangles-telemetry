@@ -110,7 +110,9 @@ describe('Integration Tests - Console Export', () => {
       });
 
       const meter = getMeter('test-component');
-      const counter = meter.createCounter('test_counter', {
+      expect(meter).toBeDefined();
+      
+      const counter = meter!.createCounter('test_counter', {
         description: 'Test counter for integration'
       });
 
@@ -137,7 +139,9 @@ describe('Integration Tests - Console Export', () => {
       });
 
       const meter = getMeter('test-component');
-      const histogram = meter.createHistogram('test_histogram', {
+      expect(meter).toBeDefined();
+      
+      const histogram = meter!.createHistogram('test_histogram', {
         description: 'Test histogram for integration'
       });
 
@@ -313,7 +317,9 @@ describe('Integration Tests - Console Export', () => {
 
       // Create a metric
       const meter = getMeter('test-component');
-      const counter = meter.createCounter('combined_test_counter');
+      expect(meter).toBeDefined();
+      
+      const counter = meter!.createCounter('combined_test_counter');
       counter.add(1, { test: 'combined' });
 
       // Create a log
