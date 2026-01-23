@@ -7,9 +7,9 @@ const originalConsoleWarn = console.warn;
 
 beforeAll(() => {
   // Suppress console output during tests unless explicitly needed
-  console.log = jest.fn();
-  console.error = jest.fn();
-  console.warn = jest.fn();
+  // console.log = jest.fn();
+  // console.error = jest.fn();
+  // console.warn = jest.fn();
 });
 
 afterAll(() => {

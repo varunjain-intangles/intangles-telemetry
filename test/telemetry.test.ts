@@ -28,7 +28,8 @@ describe('Telemetry Library', () => {
 
       const tracer = getTracer('test-component');
       expect(tracer).toBeDefined();
-      expect(typeof tracer.startSpan).toBe('function');
+      expect(tracer).toBeTruthy();
+      expect(typeof tracer!.startSpan).toBe('function');
     });
 
     test('should provide meter instance', () => {
@@ -60,7 +61,9 @@ describe('Telemetry Library', () => {
       });
 
       const tracer = getTracer('test-component');
-      const span = tracer.startSpan('test-operation');
+      expect(tracer).toBeDefined();
+      
+      const span = tracer!.startSpan('test-operation');
 
       expect(span).toBeDefined();
       expect(typeof span.setAttribute).toBe('function');
@@ -111,7 +114,7 @@ describe('Telemetry Library', () => {
 
       const tracer = getTracer('test-component');
       expect(tracer).toBeDefined();
-      expect(typeof tracer.startSpan).toBe('function');
+      expect(typeof tracer!.startSpan).toBe('function');
     });
 
     test('should provide meter instance in auto mode', () => {

@@ -13,6 +13,7 @@ import {
   ATTR_SERVICE_NAME,
   ATTR_SERVICE_VERSION,
 } from "@opentelemetry/semantic-conventions";
+import { CustomTracer } from "../core/custom-tracer";
 
 export class TracerProvider {
   private config: InstrumentationConfig;
@@ -56,6 +57,7 @@ export class TracerProvider {
   }
 
   getTracer(name: string) {
-    return this.provider?.getTracer(name);
+    const otelTracer = this.provider?.getTracer(name);
+    return otelTracer ? new CustomTracer(otelTracer) : undefined;
   }
 }

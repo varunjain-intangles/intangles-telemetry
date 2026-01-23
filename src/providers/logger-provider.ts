@@ -1,5 +1,8 @@
 import { InstrumentationConfig } from "../types/config";
-import { LoggerProvider } from "@opentelemetry/sdk-logs";
+import {
+  LoggerProvider,
+  BatchLogRecordProcessor,
+} from "@opentelemetry/sdk-logs";
 import { OTLPLogExporter } from "@opentelemetry/exporter-logs-otlp-grpc";
 import {
   ConsoleLogRecordExporter,
@@ -30,8 +33,6 @@ export class LogProvider {
       }),
     );
 
-    this.provider = new LoggerProvider({ resource });
-
     const exporterType = this.config.exporters?.logs;
     let exporter;
 
@@ -39,22 +40,22 @@ export class LogProvider {
       exporter = new OTLPLogExporter({
         url: this.config.endpoints?.otlp || "http://localhost:4318/v1/logs",
       });
-    } 
-    else 
-      // if (exporterType === "console") 
-        {
+    } else if (exporterType === "console") {
       exporter = new ConsoleLogRecordExporter();
+    } else {
+      console.warn(`Unsupported log exporter type: ${exporterType}`);
     }
 
-    if (exporter && this.provider) {
+    if (exporter) {
       const logProcessor = new SimpleLogRecordProcessor(exporter);
-      // Try different method names
-      if (typeof (this.provider as any).addLogRecordProcessor === "function") {
-        (this.provider as any).addLogRecordProcessor(logProcessor);
-      }
+
+      this.provider = new LoggerProvider({
+        resource,
+        processors: [logProcessor],
+      });
     }
 
-    ['SIGINT', 'SIGTERM'].forEach(signal => {
+    ["SIGINT", "SIGTERM"].forEach((signal) => {
       process.on(signal, () => this.provider?.shutdown().catch(console.error));
     });
     // this.provider.register();

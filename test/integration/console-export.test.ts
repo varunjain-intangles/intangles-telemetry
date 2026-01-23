@@ -36,7 +36,9 @@ describe('Integration Tests - Console Export', () => {
       });
 
       const tracer = getTracer('test-component');
-      const span = tracer.startSpan('test-operation');
+      expect(tracer).toBeDefined();
+      
+      const span = tracer!.startSpan('test-operation');
 
       span.setAttribute('test.key', 'test-value');
       span.addEvent('test-event', { eventKey: 'eventValue' });
@@ -51,7 +53,7 @@ describe('Integration Tests - Console Export', () => {
       console.log('Captured output:', JSON.stringify(capturedOutput, null, 2));
 
       // Check that span was logged to console
-      const allSpanOutput = Object.values(capturedOutput).flat();
+      const allSpanOutput = Object.values(capturedOutput).flat().flat();
       const spanStrings = allSpanOutput.filter(item =>
         typeof item === 'string' && (item.includes('test-operation') || item.includes('test.key'))
       );
@@ -69,11 +71,13 @@ describe('Integration Tests - Console Export', () => {
       });
 
       const tracer = getTracer('test-component');
-      const parentSpan = tracer.startSpan('parent-operation');
+      expect(tracer).toBeDefined();
+      
+      const parentSpan = tracer!.startSpan('parent-operation');
 
       parentSpan.setAttribute('parent.key', 'parent-value');
 
-      const childSpan = tracer.startSpan('child-operation', {
+      const childSpan = tracer!.startSpan('child-operation', {
         parent: parentSpan
       });
 
@@ -86,7 +90,7 @@ describe('Integration Tests - Console Export', () => {
       await new Promise(resolve => setTimeout(resolve, 100));
 
       // Check that both spans were logged
-      const allNestedOutput = Object.values(capturedOutput).flat();
+      const allNestedOutput = Object.values(capturedOutput).flat().flat();
       expect(allNestedOutput.some(item =>
         (typeof item === 'string' && item.includes('parent-operation')) ||
         (typeof item === 'object' && item && item.name === 'parent-operation')
@@ -118,7 +122,7 @@ describe('Integration Tests - Console Export', () => {
       await new Promise(resolve => setTimeout(resolve, 11000));
 
       // Check that metrics were logged
-      const allMetricOutput = Object.values(capturedOutput).flat();
+      const allMetricOutput = Object.values(capturedOutput).flat().flat();
       const metricObjects = allMetricOutput.filter(item =>
         typeof item === 'object' && item && item.descriptor && item.descriptor.name === 'test_counter'
       );
@@ -146,7 +150,7 @@ describe('Integration Tests - Console Export', () => {
       await new Promise(resolve => setTimeout(resolve, 11000));
 
       // Check that histogram was logged
-      const allHistogramOutput = Object.values(capturedOutput).flat();
+      const allHistogramOutput = Object.values(capturedOutput).flat().flat();
       const histogramObjects = allHistogramOutput.filter(item =>
         typeof item === 'object' && item && item.descriptor && item.descriptor.name === 'test_histogram'
       );
@@ -178,7 +182,7 @@ describe('Integration Tests - Console Export', () => {
       await new Promise(resolve => setTimeout(resolve, 100));
 
       // Check that log was published
-      const allLogOutput = Object.values(capturedOutput).flat();
+      const allLogOutput = Object.values(capturedOutput).flat().flat();
       const logStrings = allLogOutput.filter(item =>
         typeof item === 'string' && (item.includes('Test log message') || item.includes('log.key'))
       );
@@ -226,7 +230,7 @@ describe('Integration Tests - Console Export', () => {
       await new Promise(resolve => setTimeout(resolve, 100));
 
       // Check that all log levels were published
-      const allSeverityOutput = Object.values(capturedOutput).flat();
+      const allSeverityOutput = Object.values(capturedOutput).flat().flat();
       expect(allSeverityOutput.some(item =>
         (typeof item === 'string' && item.includes('Debug message')) ||
         (typeof item === 'object' && item && item.body === 'Debug message')
@@ -260,7 +264,9 @@ describe('Integration Tests - Console Export', () => {
 
       // Create a trace
       const tracer = getTracer('test-component');
-      const span = tracer.startSpan('combined-test-operation');
+      expect(tracer).toBeDefined();
+      
+      const span = tracer!.startSpan('combined-test-operation');
       span.setAttribute('test.type', 'combined');
       span.end();
 
@@ -282,7 +288,7 @@ describe('Integration Tests - Console Export', () => {
       await new Promise(resolve => setTimeout(resolve, 11000));
 
       // Verify all telemetry types were published
-      const allCombinedOutput = Object.values(capturedOutput).flat();
+      const allCombinedOutput = Object.values(capturedOutput).flat().flat();
       expect(allCombinedOutput.some(item =>
         (typeof item === 'string' && item.includes('combined-test-operation')) ||
         (typeof item === 'object' && item && item.name === 'combined-test-operation')
