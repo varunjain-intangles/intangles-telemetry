@@ -3,6 +3,7 @@ import { InstrumentationConfig } from './types/config';
 
 export { InstrumentationConfig } from './types/config';
 export { Tracer, Span, SpanOptions } from './types/tracer';
+export { Logger, LogRecord } from './types/logger';
 
 export function initInstrumentation(config: InstrumentationConfig) {
   const manager = new InstrumentationManager(config);

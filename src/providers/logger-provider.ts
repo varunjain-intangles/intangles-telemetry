@@ -16,6 +16,7 @@ import {
   ATTR_SERVICE_NAME,
   ATTR_SERVICE_VERSION,
 } from "@opentelemetry/semantic-conventions";
+import { CustomLogger } from "../core/custom-logger";
 
 export class LogProvider {
   private config: InstrumentationConfig;
@@ -62,6 +63,7 @@ export class LogProvider {
   }
 
   getLogger(name: string) {
-    return this.provider?.getLogger(name);
+    const otelLogger = this.provider?.getLogger(name);
+    return otelLogger ? new CustomLogger(otelLogger) : undefined;
   }
 }

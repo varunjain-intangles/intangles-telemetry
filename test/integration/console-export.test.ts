@@ -167,8 +167,9 @@ describe('Integration Tests - Console Export', () => {
       });
 
       const logger = getLogger('test-component');
+      expect(logger).toBeDefined();
 
-      logger.emit({
+      logger!.emit({
         severityNumber: 9, // INFO
         severityText: 'INFO',
         body: 'Test log message',
@@ -202,29 +203,69 @@ describe('Integration Tests - Console Export', () => {
       const logger = getLogger('test-component');
 
       // Log different severity levels
-      logger.emit({
+      logger!.emit({
         severityNumber: 5, // DEBUG
         severityText: 'DEBUG',
         body: 'Debug message'
       });
 
-      logger.emit({
+      logger!.emit({
         severityNumber: 9, // INFO
         severityText: 'INFO',
         body: 'Info message'
       });
 
-      logger.emit({
+      logger!.emit({
         severityNumber: 13, // WARN
         severityText: 'WARN',
         body: 'Warning message'
       });
 
-      logger.emit({
+      logger!.emit({
         severityNumber: 17, // ERROR
         severityText: 'ERROR',
         body: 'Error message'
       });
+
+      // Wait for processing
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // Check that all log levels were published
+      const allSeverityOutput = Object.values(capturedOutput).flat().flat();
+      expect(allSeverityOutput.some(item =>
+        (typeof item === 'string' && item.includes('Debug message')) ||
+        (typeof item === 'object' && item && item.body === 'Debug message')
+      )).toBe(true);
+      expect(allSeverityOutput.some(item =>
+        (typeof item === 'string' && item.includes('Info message')) ||
+        (typeof item === 'object' && item && item.body === 'Info message')
+      )).toBe(true);
+      expect(allSeverityOutput.some(item =>
+        (typeof item === 'string' && item.includes('Warning message')) ||
+        (typeof item === 'object' && item && item.body === 'Warning message')
+      )).toBe(true);
+      expect(allSeverityOutput.some(item =>
+        (typeof item === 'string' && item.includes('Error message')) ||
+        (typeof item === 'object' && item && item.body === 'Error message')
+      )).toBe(true);
+    });
+
+     test('should publish logs with different severity levels using specific methods', async () => {
+      initInstrumentation({
+        serviceName: 'integration-test-service',
+        exporters: { logs: 'console' }
+      });
+
+      const logger = getLogger('test-component');
+
+      // Log different severity levels
+      logger!.debug('Debug message', { component: 'test-component' });
+
+      logger!.info('Info message', { component: 'test-component' });
+      
+      logger!.warn('Warning message', { component: 'test-component' });
+      
+      logger!.error('Error message', { component: 'test-component' });
 
       // Wait for processing
       await new Promise(resolve => setTimeout(resolve, 100));
@@ -277,7 +318,9 @@ describe('Integration Tests - Console Export', () => {
 
       // Create a log
       const logger = getLogger('test-component');
-      logger.emit({
+      expect(logger).toBeDefined();
+      
+      logger!.emit({
         severityNumber: 9,
         severityText: 'INFO',
         body: 'Combined test log',

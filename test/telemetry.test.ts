@@ -51,7 +51,8 @@ describe('Telemetry Library', () => {
 
       const logger = getLogger('test-component');
       expect(logger).toBeDefined();
-      expect(typeof logger.emit).toBe('function');
+      expect(logger).toBeTruthy();
+      expect(typeof logger!.emit).toBe('function');
     });
 
     test('should create spans correctly', () => {
@@ -138,7 +139,7 @@ describe('Telemetry Library', () => {
 
       const logger = getLogger('test-component');
       expect(logger).toBeDefined();
-      expect(typeof logger.emit).toBe('function');
+      expect(typeof logger!.emit).toBe('function');
     });
   });
 

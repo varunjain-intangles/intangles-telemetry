@@ -10,6 +10,7 @@ import {
   ATTR_SERVICE_VERSION,
 } from "@opentelemetry/semantic-conventions";
 import { CustomTracer } from "./custom-tracer";
+import { CustomLogger } from "./custom-logger";
 
 export class InstrumentationManager {
   private static instance: InstrumentationManager | null = null;
@@ -89,7 +90,8 @@ export class InstrumentationManager {
     if (this.config.autoInstrument) {
       // When using NodeSdk, get logger from global API
       const { logs } = require("@opentelemetry/api-logs");
-      return logs.getLogger(name);
+      const otelLogger = logs.getLogger(name);
+      return new CustomLogger(otelLogger);
     }
     return this.loggerProvider?.getLogger(name);
   }
