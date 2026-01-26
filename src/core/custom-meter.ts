@@ -1,5 +1,19 @@
-import { Meter as OTelMeter, Counter as OTelCounter, Histogram as OTelHistogram, UpDownCounter as OTelUpDownCounter } from "@opentelemetry/api";
-import { Meter, Counter, Histogram, UpDownCounter, ObservableCounter, ObservableGauge, ObservableUpDownCounter, MetricOptions } from "../types/meter";
+import {
+  Meter as OTelMeter,
+  Counter as OTelCounter,
+  Histogram as OTelHistogram,
+  UpDownCounter as OTelUpDownCounter,
+} from "@opentelemetry/api";
+import {
+  Meter,
+  Counter,
+  Histogram,
+  UpDownCounter,
+  ObservableCounter,
+  ObservableGauge,
+  ObservableUpDownCounter,
+  MetricOptions,
+} from "../types/meter";
 
 export class CustomCounter implements Counter {
   private otelCounter: OTelCounter;
@@ -8,7 +22,10 @@ export class CustomCounter implements Counter {
     this.otelCounter = otelCounter;
   }
 
-  add(value: number, attributes?: Record<string, string | number | boolean>): void {
+  add(
+    value: number,
+    attributes?: Record<string, string | number | boolean>,
+  ): void {
     this.otelCounter.add(value, attributes);
   }
 }
@@ -20,7 +37,10 @@ export class CustomHistogram implements Histogram {
     this.otelHistogram = otelHistogram;
   }
 
-  record(value: number, attributes?: Record<string, string | number | boolean>): void {
+  record(
+    value: number,
+    attributes?: Record<string, string | number | boolean>,
+  ): void {
     this.otelHistogram.record(value, attributes);
   }
 }
@@ -32,7 +52,10 @@ export class CustomUpDownCounter implements UpDownCounter {
     this.otelUpDownCounter = otelUpDownCounter;
   }
 
-  add(value: number, attributes?: Record<string, string | number | boolean>): void {
+  add(
+    value: number,
+    attributes?: Record<string, string | number | boolean>,
+  ): void {
     this.otelUpDownCounter.add(value, attributes);
   }
 }
@@ -71,17 +94,26 @@ export class CustomMeter implements Meter {
     return new CustomUpDownCounter(otelUpDownCounter);
   }
 
-  createObservableCounter(name: string, options?: MetricOptions): ObservableCounter {
+  createObservableCounter(
+    name: string,
+    options?: MetricOptions,
+  ): ObservableCounter {
     // Simplified - would need callback implementation for full functionality
     return new CustomObservableCounter();
   }
 
-  createObservableGauge(name: string, options?: MetricOptions): ObservableGauge {
+  createObservableGauge(
+    name: string,
+    options?: MetricOptions,
+  ): ObservableGauge {
     // Simplified - would need callback implementation for full functionality
     return new CustomObservableGauge();
   }
 
-  createObservableUpDownCounter(name: string, options?: MetricOptions): ObservableUpDownCounter {
+  createObservableUpDownCounter(
+    name: string,
+    options?: MetricOptions,
+  ): ObservableUpDownCounter {
     // Simplified - would need callback implementation for full functionality
     return new CustomObservableUpDownCounter();
   }

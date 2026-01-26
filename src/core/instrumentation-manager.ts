@@ -36,6 +36,8 @@ export class InstrumentationManager {
   }
 
   private initWithNodeSdk() {
+    this.tracerProvider = new TracerProvider(this.config);
+
     const sdk = new NodeSDK({
       serviceName: this.config.serviceName,
       resource: resourceFromAttributes({
@@ -56,6 +58,7 @@ export class InstrumentationManager {
           },
         }),
       ],
+      spanProcessors: this.tracerProvider.getSpanProcessors(),
     });
 
     sdk.start();

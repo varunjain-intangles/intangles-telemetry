@@ -14,6 +14,7 @@ import {
   ATTR_SERVICE_VERSION,
 } from "@opentelemetry/semantic-conventions";
 import { CustomTracer } from "../core/custom-tracer";
+import { getSpan } from "@opentelemetry/api/build/src/trace/context-utils";
 
 export class TracerProvider {
   private config: InstrumentationConfig;
@@ -24,8 +25,23 @@ export class TracerProvider {
   }
 
   init() {
-    const spanProcessors = [];
+    const spanProcessors = this.getSpanProcessors();
+    const resource = defaultResource().merge(
+      resourceFromAttributes({
+        [ATTR_SERVICE_NAME]: this.config.serviceName,
+        [ATTR_SERVICE_VERSION]: this.config.serviceVersion,
+      }),
+    );
+    this.provider = new NodeTracerProvider({
+      spanProcessors,
+      resource,
+    });
 
+    this.provider.register();
+  }
+
+  getSpanProcessors() {
+    const spanProcessors = [];
     // Add exporters
     const exporterType = this.config.exporters?.traces;
     let exporter;
@@ -42,18 +58,7 @@ export class TracerProvider {
       const spanProcessor = new SimpleSpanProcessor(exporter);
       spanProcessors.push(spanProcessor);
     }
-    const resource = defaultResource().merge(
-      resourceFromAttributes({
-        [ATTR_SERVICE_NAME]: this.config.serviceName,
-        [ATTR_SERVICE_VERSION]: this.config.serviceVersion,
-      }),
-    );
-    this.provider = new NodeTracerProvider({
-      spanProcessors,
-      resource,
-    });
-
-    this.provider.register();
+    return spanProcessors;
   }
 
   getTracer(name: string) {
