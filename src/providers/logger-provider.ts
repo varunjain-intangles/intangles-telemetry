@@ -2,12 +2,10 @@ import { InstrumentationConfig } from "../types/config";
 import {
   LoggerProvider,
   BatchLogRecordProcessor,
-} from "@opentelemetry/sdk-logs";
-import { OTLPLogExporter } from "@opentelemetry/exporter-logs-otlp-grpc";
-import {
   ConsoleLogRecordExporter,
   SimpleLogRecordProcessor,
 } from "@opentelemetry/sdk-logs";
+import { logs } from "@opentelemetry/api-logs";
 import {
   defaultResource,
   resourceFromAttributes,
@@ -17,6 +15,7 @@ import {
   ATTR_SERVICE_VERSION,
 } from "@opentelemetry/semantic-conventions";
 import { CustomLogger } from "../core/custom-logger";
+import { OTLPLogExporter } from "@opentelemetry/exporter-logs-otlp-grpc";
 
 export class LogProvider {
   private config: InstrumentationConfig;
@@ -34,6 +33,32 @@ export class LogProvider {
       }),
     );
 
+    // Add log record processors
+    const logProcessors = this.getLogRecordProcessors();
+    if (logProcessors.length > 0) {
+      this.provider = new LoggerProvider({
+        resource,
+        processors: logProcessors,
+      });
+    } else {
+      this.provider = new LoggerProvider({
+        resource,
+      });
+    }
+
+    ["SIGINT", "SIGTERM"].forEach((signal) => {
+      process.on(signal, () => this.provider?.shutdown().catch(console.error));
+    });
+
+    logs.setGlobalLoggerProvider(this.provider);
+  }
+
+  getLogger(name: string) {
+    const otelLogger = this.provider?.getLogger(name);
+    return otelLogger ? new CustomLogger(otelLogger) : undefined;
+  }
+
+  getLogRecordProcessors() {
     const exporterType = this.config.exporters?.logs;
     let exporter;
 
@@ -47,23 +72,14 @@ export class LogProvider {
       console.warn(`Unsupported log exporter type: ${exporterType}`);
     }
 
-    if (exporter) {
-      const logProcessor = new SimpleLogRecordProcessor(exporter);
-
-      this.provider = new LoggerProvider({
-        resource,
-        processors: [logProcessor],
-      });
-    }
-
-    ["SIGINT", "SIGTERM"].forEach((signal) => {
-      process.on(signal, () => this.provider?.shutdown().catch(console.error));
-    });
-    // this.provider.register();
+    return exporter ? [new SimpleLogRecordProcessor(exporter)] : [];
   }
 
-  getLogger(name: string) {
-    const otelLogger = this.provider?.getLogger(name);
-    return otelLogger ? new CustomLogger(otelLogger) : undefined;
+  flush(): Promise<void> {
+    return this.provider?.forceFlush() || Promise.resolve();
+  }
+
+  shutdown(): Promise<void> {
+    return this.provider?.shutdown() || Promise.resolve();
   }
 }

@@ -36,9 +36,19 @@ export class InstrumentationManager {
   }
 
   private initWithNodeSdk() {
-    this.tracerProvider = new TracerProvider(this.config);
+    // Initialize providers manually
+    if (this.config.exporters?.traces) {
+      this.tracerProvider = new TracerProvider(this.config);
+    }
+    if (this.config.exporters?.logs) {
+      this.loggerProvider = new LogProvider(this.config);
+    }
+    if (this.config.exporters?.metrics) {
+      this.metricProvider = new MetricProvider(this.config);
+    }
 
-    const sdk = new NodeSDK({
+    const sdkOptions = {
+      autodetectResources: true,
       serviceName: this.config.serviceName,
       resource: resourceFromAttributes({
         [ATTR_SERVICE_NAME]: this.config.serviceName,
@@ -58,8 +68,12 @@ export class InstrumentationManager {
           },
         }),
       ],
-      spanProcessors: this.tracerProvider.getSpanProcessors(),
-    });
+      spanProcessors: this.tracerProvider?.getSpanProcessors(),
+      logRecordProcessors: this.loggerProvider?.getLogRecordProcessors(),
+      metricReaders: this.metricProvider?.getMetricReaders(),
+    };
+
+    const sdk = new NodeSDK(sdkOptions);
 
     sdk.start();
   }
@@ -112,5 +126,37 @@ export class InstrumentationManager {
 
   static getInstance(): InstrumentationManager | null {
     return this.instance;
+  }
+
+  async flush(): Promise<void> {
+    const flushPromises: Promise<void>[] = [];
+
+    if (this.tracerProvider) {
+      flushPromises.push(this.tracerProvider.flush());
+    }
+    if (this.loggerProvider) {
+      flushPromises.push(this.loggerProvider.flush());
+    }
+    if (this.metricProvider) {
+      flushPromises.push(this.metricProvider.flush());
+    }
+
+    await Promise.all(flushPromises).then(() => {});
+  }
+
+  async shutdown(): Promise<void> {
+    const shutdownPromises: Promise<void>[] = [];
+
+    if (this.tracerProvider) {
+      shutdownPromises.push(this.tracerProvider.shutdown());
+    }
+    if (this.loggerProvider) {
+      shutdownPromises.push(this.loggerProvider.shutdown());
+    }
+    if (this.metricProvider) {
+      shutdownPromises.push(this.metricProvider.shutdown());
+    }
+
+    await Promise.all(shutdownPromises);
   }
 }

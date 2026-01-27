@@ -14,6 +14,7 @@ import {
   ATTR_SERVICE_VERSION,
 } from "@opentelemetry/semantic-conventions";
 import { CustomMeter } from "../core/custom-meter";
+import { metrics } from "@opentelemetry/api";
 
 export class MetricProvider {
   private config: InstrumentationConfig;
@@ -24,6 +25,30 @@ export class MetricProvider {
   }
 
   init() {
+    const metricReaders = this.getMetricReaders();
+    const resource = defaultResource().merge(
+      resourceFromAttributes({
+        [ATTR_SERVICE_NAME]: this.config.serviceName,
+        [ATTR_SERVICE_VERSION]: this.config.serviceVersion,
+      }),
+    );
+
+    this.provider = new MeterProvider({
+      readers: metricReaders,
+      resource,
+    });
+
+    // Set this MeterProvider to be global to the app being instrumented.
+    metrics.setGlobalMeterProvider(this.provider);
+    // this.provider.register();
+  }
+
+  getMeter(name: string) {
+    const otelMeter = this.provider?.getMeter(name);
+    return otelMeter ? new CustomMeter(otelMeter) : undefined;
+  }
+
+  getMetricReaders() {
     const metricReaders = [];
 
     // Add exporters
@@ -48,24 +73,18 @@ export class MetricProvider {
           exportIntervalMillis: 10000,
         }),
       );
+    } else {
+      // No exporter configured
+      console.warn(`Unsupported metric exporter type: ${exporterType}`);
     }
-    const resource = defaultResource().merge(
-      resourceFromAttributes({
-        [ATTR_SERVICE_NAME]: this.config.serviceName,
-        [ATTR_SERVICE_VERSION]: this.config.serviceVersion,
-      }),
-    );
-
-    this.provider = new MeterProvider({
-      readers: metricReaders,
-      resource,
-    });
-
-    // this.provider.register();
+    return metricReaders;
   }
 
-  getMeter(name: string) {
-    const otelMeter = this.provider?.getMeter(name);
-    return otelMeter ? new CustomMeter(otelMeter) : undefined;
+  flush(): Promise<void> {
+    return this.provider?.forceFlush() || Promise.resolve();
+  }
+
+  shutdown(): Promise<void> {
+    return this.provider?.shutdown() || Promise.resolve();
   }
 }

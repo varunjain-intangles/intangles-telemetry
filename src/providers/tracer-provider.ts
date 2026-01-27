@@ -65,4 +65,12 @@ export class TracerProvider {
     const otelTracer = this.provider?.getTracer(name);
     return otelTracer ? new CustomTracer(otelTracer) : undefined;
   }
+
+  flush(): Promise<void> {
+    return this.provider?.forceFlush() || Promise.resolve();
+  }
+
+  shutdown(): Promise<void> {
+    return this.provider?.shutdown() || Promise.resolve();
+  }
 }

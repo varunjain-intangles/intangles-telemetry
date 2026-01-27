@@ -23,3 +23,11 @@ export function getLogger(name: string) {
 export function getMeter(name: string) {
   return InstrumentationManager.getInstance()?.getMeter(name);
 }
+
+export async function flush(): Promise<void> {
+  return InstrumentationManager.getInstance()?.flush();
+}
+
+export async function shutdown(): Promise<void> {
+  return InstrumentationManager.getInstance()?.shutdown();
+} 
