@@ -5,6 +5,7 @@ import {
   getLogger,
   INSTRUMENTATION_HTTP,
   INSTRUMENTATION_EXPRESS,
+  flush,
 } from "../../src/index";
 
 describe("Integration Tests - Console Export", () => {
@@ -65,7 +66,8 @@ describe("Integration Tests - Console Export", () => {
       span.end();
 
       // Wait a bit for async processing
-      await new Promise((resolve) => setTimeout(resolve, 5000));
+      await flush();
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       // Debug: log captured output
       console.log("Captured output:", JSON.stringify(capturedOutput, null, 2));
@@ -108,7 +110,8 @@ describe("Integration Tests - Console Export", () => {
       parentSpan.end();
 
       // Wait for processing
-      await new Promise((resolve) => setTimeout(resolve, 5000));
+      await flush();
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       // Check that both spans were logged
       const allNestedOutput = Object.values(capturedOutput).flat().flat();
@@ -152,7 +155,8 @@ describe("Integration Tests - Console Export", () => {
       counter.add(3, { environment: "test", version: "1.0" });
 
       // Wait for metrics to be exported (console exporter uses PeriodicExportingMetricReader with 10s interval)
-      await new Promise((resolve) => setTimeout(resolve, 11000));
+      await flush();
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       // Check that metrics were logged
       const allMetricOutput = Object.values(capturedOutput).flat().flat();
@@ -186,7 +190,8 @@ describe("Integration Tests - Console Export", () => {
       histogram.record(150, { method: "GET" });
 
       // Wait for export
-      await new Promise((resolve) => setTimeout(resolve, 11000));
+      await flush();
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       // Check that histogram was logged
       const allHistogramOutput = Object.values(capturedOutput).flat().flat();
@@ -223,7 +228,8 @@ describe("Integration Tests - Console Export", () => {
       });
 
       // Wait for processing
-      await new Promise((resolve) => setTimeout(resolve, 5000));
+      await flush();
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       // Check that log was published
       const allLogOutput = Object.values(capturedOutput).flat().flat();
@@ -274,7 +280,8 @@ describe("Integration Tests - Console Export", () => {
       });
 
       // Wait for processing
-      await new Promise((resolve) => setTimeout(resolve, 5000));
+      await flush();
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       // Check that all log levels were published
       const allSeverityOutput = Object.values(capturedOutput).flat().flat();
@@ -328,7 +335,8 @@ describe("Integration Tests - Console Export", () => {
       logger!.error("Error message", { component: "test-component" });
 
       // Wait for processing
-      await new Promise((resolve) => setTimeout(resolve, 5000));
+      await flush();
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       // Check that all log levels were published
       const allSeverityOutput = Object.values(capturedOutput).flat().flat();
@@ -404,7 +412,8 @@ describe("Integration Tests - Console Export", () => {
       });
 
       // Wait for all processing
-      await new Promise((resolve) => setTimeout(resolve, 11000));
+      await flush();
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       // Verify all telemetry types were published
       const allCombinedOutput = Object.values(capturedOutput).flat().flat();

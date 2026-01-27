@@ -195,12 +195,34 @@ export class InstrumentationManager {
 
     if (this.tracerProvider) {
       flushPromises.push(this.tracerProvider.flush());
+    } else if (
+      this.config.autoInstrument &&
+      process.env.OTEL_TRACES_EXPORTER !== "none"
+    ) {
+      const { trace } = require("@opentelemetry/api");
+      const tracer = trace.getTracerProvider("default");
+      flushPromises.push(tracer.getDelegate().forceFlush());
     }
+
     if (this.loggerProvider) {
       flushPromises.push(this.loggerProvider.flush());
+    } else if (
+      this.config.autoInstrument &&
+      process.env.OTEL_LOGS_EXPORTER !== "none"
+    ) {
+      const { logs } = require("@opentelemetry/api-logs");
+      const logger = logs.getLoggerProvider();
+      flushPromises.push(logger.forceFlush());
     }
     if (this.metricProvider) {
       flushPromises.push(this.metricProvider.flush());
+    } else if (
+      this.config.autoInstrument &&
+      process.env.OTEL_METRICS_EXPORTER !== "none"
+    ) {
+      const { metrics } = require("@opentelemetry/api");
+      const meter = metrics.getMeterProvider();
+      flushPromises.push(meter.forceFlush());
     }
 
     await Promise.all(flushPromises).then(() => {});
