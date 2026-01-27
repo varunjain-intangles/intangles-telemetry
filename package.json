@@ -16,6 +16,7 @@
     "test": "jest",
     "test:integration": "jest --testPathPattern=integration --runInBand ",
     "test:integration_auto": "jest --runInBand --runTestsByPath test/integration/console-export-auto-instrument.test.ts",
+    "test:integration_manual": "jest --runInBand --runTestsByPath test/integration/console-export.test.ts",
     "test:unit": "jest --testPathPattern=telemetry.test.ts",
     "lint": "eslint src/**/*.ts",
     "format": "prettier --write src/**/*.ts test/**/*.ts",

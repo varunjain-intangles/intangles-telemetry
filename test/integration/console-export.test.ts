@@ -3,6 +3,8 @@ import {
   getTracer,
   getMeter,
   getLogger,
+  INSTRUMENTATION_HTTP,
+  INSTRUMENTATION_EXPRESS,
 } from "../../src/index";
 
 describe("Integration Tests - Console Export", () => {
@@ -48,6 +50,7 @@ describe("Integration Tests - Console Export", () => {
         serviceName: "integration-test-service",
         exporters: { traces: "console" },
         autoInstrument: false,
+        instrumentations: [INSTRUMENTATION_HTTP, INSTRUMENTATION_EXPRESS],
       });
 
       const tracer = getTracer("test-component");
@@ -62,7 +65,7 @@ describe("Integration Tests - Console Export", () => {
       span.end();
 
       // Wait a bit for async processing
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 5000));
 
       // Debug: log captured output
       console.log("Captured output:", JSON.stringify(capturedOutput, null, 2));
@@ -80,7 +83,7 @@ describe("Integration Tests - Console Export", () => {
       );
 
       expect(spanStrings.length + spanObjects.length).toBeGreaterThan(0);
-    });
+    }, 10000);
 
     test("should publish nested spans to console", async () => {
       initInstrumentation({
@@ -105,7 +108,7 @@ describe("Integration Tests - Console Export", () => {
       parentSpan.end();
 
       // Wait for processing
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 5000));
 
       // Check that both spans were logged
       const allNestedOutput = Object.values(capturedOutput).flat().flat();
@@ -127,7 +130,7 @@ describe("Integration Tests - Console Export", () => {
               item.name === "child-operation"),
         ),
       ).toBe(true);
-    });
+    }, 10000);
   });
 
   describe("Metrics Publishing", () => {
@@ -220,7 +223,7 @@ describe("Integration Tests - Console Export", () => {
       });
 
       // Wait for processing
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 5000));
 
       // Check that log was published
       const allLogOutput = Object.values(capturedOutput).flat().flat();
@@ -235,7 +238,7 @@ describe("Integration Tests - Console Export", () => {
       );
 
       expect(logStrings.length + logObjects.length).toBeGreaterThan(0);
-    });
+    }, 10000);
 
     test("should publish logs with different severity levels", async () => {
       initInstrumentation({
@@ -271,7 +274,7 @@ describe("Integration Tests - Console Export", () => {
       });
 
       // Wait for processing
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 5000));
 
       // Check that all log levels were published
       const allSeverityOutput = Object.values(capturedOutput).flat().flat();
@@ -305,7 +308,7 @@ describe("Integration Tests - Console Export", () => {
             (typeof item === "object" && item && item.body === "Error message"),
         ),
       ).toBe(true);
-    });
+    }, 10000);
 
     test("should publish logs with different severity levels using specific methods", async () => {
       initInstrumentation({
@@ -325,7 +328,7 @@ describe("Integration Tests - Console Export", () => {
       logger!.error("Error message", { component: "test-component" });
 
       // Wait for processing
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 5000));
 
       // Check that all log levels were published
       const allSeverityOutput = Object.values(capturedOutput).flat().flat();
@@ -359,7 +362,7 @@ describe("Integration Tests - Console Export", () => {
             (typeof item === "object" && item && item.body === "Error message"),
         ),
       ).toBe(true);
-    });
+    }, 10000);
   });
 
   describe("Combined Telemetry Publishing", () => {

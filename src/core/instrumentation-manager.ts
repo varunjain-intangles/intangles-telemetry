@@ -3,6 +3,7 @@ import { TracerProvider } from "../providers/tracer-provider";
 import { LogProvider } from "../providers/logger-provider";
 import { MetricProvider } from "../providers/meter-provider";
 import { NodeSDK } from "@opentelemetry/sdk-node";
+import { Instrumentation } from "@opentelemetry/instrumentation";
 import { getNodeAutoInstrumentations } from "@opentelemetry/auto-instrumentations-node";
 import { resourceFromAttributes } from "@opentelemetry/resources";
 import {
@@ -12,6 +13,13 @@ import {
 import { CustomTracer } from "./custom-tracer";
 import { CustomLogger } from "./custom-logger";
 import { CustomMeter } from "./custom-meter";
+
+/**
+ * Interface representing the expected shape of an OTel instrumentation module
+ */
+interface InstrumentationModule {
+  [key: string]: any;
+}
 
 export class InstrumentationManager {
   private static instance: InstrumentationManager | null = null;
@@ -36,17 +44,6 @@ export class InstrumentationManager {
   }
 
   private initWithNodeSdk() {
-    // Initialize providers manually
-    if (this.config.exporters?.traces) {
-      this.tracerProvider = new TracerProvider(this.config);
-    }
-    if (this.config.exporters?.logs) {
-      this.loggerProvider = new LogProvider(this.config);
-    }
-    if (this.config.exporters?.metrics) {
-      this.metricProvider = new MetricProvider(this.config);
-    }
-
     const sdkOptions = {
       autodetectResources: true,
       serviceName: this.config.serviceName,
@@ -68,9 +65,6 @@ export class InstrumentationManager {
           },
         }),
       ],
-      spanProcessors: this.tracerProvider?.getSpanProcessors(),
-      logRecordProcessors: this.loggerProvider?.getLogRecordProcessors(),
-      metricReaders: this.metricProvider?.getMetricReaders(),
     };
 
     const sdk = new NodeSDK(sdkOptions);
@@ -91,6 +85,74 @@ export class InstrumentationManager {
     if (this.config.exporters?.metrics) {
       this.metricProvider = new MetricProvider(this.config);
       this.metricProvider.init();
+    }
+
+    // Initialize instrumentations
+    const instrumentations: Instrumentation[] = [];
+
+    this.config.instrumentations?.forEach((element) => {
+      try {
+        this.loadInstrumentation(element).then((instrumentation) => {
+          instrumentations.push(instrumentation);
+        });
+      } catch (error) {
+        console.error(`Failed to load instrumentation ${element}:`, error);
+      }
+    });
+
+    const sdkOptions = {
+      autodetectResources: true,
+      serviceName: this.config.serviceName,
+      resource: resourceFromAttributes({
+        [ATTR_SERVICE_NAME]: this.config.serviceName,
+        [ATTR_SERVICE_VERSION]: this.config.serviceVersion,
+      }),
+      instrumentations: instrumentations,
+    };
+
+    const sdk = new NodeSDK(sdkOptions);
+
+    sdk.start();
+
+    console.log(
+      "Manual instrumentation initialized with selected instrumentations.",
+    );
+  }
+
+  /**
+   * Dynamically loads and enables an OpenTelemetry instrumentation package.
+   * @param packageName The npm package name (e.g., '@opentelemetry/instrumentation-http')
+   */
+  private async loadInstrumentation(
+    packageName: string,
+  ): Promise<Instrumentation> {
+    try {
+      // 1. Dynamic import
+      const module: InstrumentationModule = await import(packageName);
+
+      // 2. Find the class that looks like an Instrumentation (ends with 'Instrumentation')
+      const InstrumentationClass = Object.values(module).find(
+        (exported) =>
+          typeof exported === "function" &&
+          exported.prototype instanceof Object &&
+          exported.name.endsWith("Instrumentation"),
+      );
+
+      if (!InstrumentationClass) {
+        throw new Error(
+          `No valid instrumentation class found in ${packageName}`,
+        );
+      }
+
+      // 3. Instantiate and register
+      // We cast to 'any' for the constructor, but the result is a standard Instrumentation
+      const instance = new (InstrumentationClass as any)() as Instrumentation;
+
+      return instance;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error(`Failed to dynamically load ${packageName}: ${message}`);
+      throw error;
     }
   }
 
