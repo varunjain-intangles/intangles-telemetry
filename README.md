@@ -75,7 +75,101 @@ When `autoInstrument` is `true`, the library automatically instruments popular l
 - File system operations (can be disabled)
 - And many other popular Node.js libraries
 
+### Configuration Environment Variables
+
+ Checkout official configuration paramters
+ https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/
+
+ ## Sample configuration
+- OTEL_SERVICE_NAME=telemetry-service
+- OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
+- OTEL_LOGS_EXPORTER=console
+- OTEL_METRICS_EXPORTER=console
+- OTEL_TRACES_EXPORTER=console
+- OTEL_INSTRUMENTATION_AUTO_INSTRUMENTATION_ENABLED=true
+
 **Note:** When using auto-instrumentation, the `getTracer()`, `getMeter()`, and `getLogger()` functions return instances managed by the OpenTelemetry SDK rather than the manually configured providers.
+
+### Supported Instrumentations
+
+When using manual instrumentation configuration, you can specify which libraries to instrument using the `instrumentations` array. The following instrumentation constants are available:
+
+```typescript
+import {
+  INSTRUMENTATION_HTTP,
+  INSTRUMENTATION_EXPRESS,
+  INSTRUMENTATION_MONGODB,
+  INSTRUMENTATION_MYSQL,
+  INSTRUMENTATION_PG,
+  INSTRUMENTATION_REDIS,
+  INSTRUMENTATION_AWS_SDK,
+  // ... and many more
+  initInstrumentation
+} from '@intangles/telemetry';
+
+// Configure specific instrumentations
+initInstrumentation({
+  serviceName: 'my-service',
+  autoInstrument: false,
+  exporters: {
+    traces: 'console'
+  },
+  instrumentations: [
+    INSTRUMENTATION_HTTP,
+    INSTRUMENTATION_EXPRESS,
+    INSTRUMENTATION_MONGODB
+  ]
+});
+```
+
+**Note: The required instrumentation library must be added to dependencies of your app.**
+
+List of supported libraries is also available at:
+
+https://www.npmjs.com/package/@opentelemetry/auto-instrumentations-node
+
+**Available Instrumentations:**
+
+| Constant | Library | Purpose |
+|----------|---------|---------|
+| `INSTRUMENTATION_AMQPLIB` | amqplib | Traces AMQP message broker operations |
+| `INSTRUMENTATION_AWS_LAMBDA` | AWS Lambda | Instruments AWS Lambda function execution |
+| `INSTRUMENTATION_AWS_SDK` | AWS SDK | Traces AWS service calls |
+| `INSTRUMENTATION_BUNYAN` | Bunyan | Instruments Bunyan logging library |
+| `INSTRUMENTATION_CASSANDRA_DRIVER` | cassandra-driver | Traces Apache Cassandra operations |
+| `INSTRUMENTATION_CONNECT` | Connect | Traces Connect middleware operations |
+| `INSTRUMENTATION_CUCUMBER` | Cucumber | Instruments Cucumber test framework |
+| `INSTRUMENTATION_DATALOADER` | dataloader | Traces DataLoader batch operations |
+| `INSTRUMENTATION_DNS` | Node.js dns | Traces DNS lookups |
+| `INSTRUMENTATION_EXPRESS` | Express.js | Traces Express middleware and routes |
+| `INSTRUMENTATION_FS` | Node.js fs | Traces file system operations (default disabled) |
+| `INSTRUMENTATION_GENERIC_POOL` | generic-pool | Traces connection pool operations |
+| `INSTRUMENTATION_GRAPHQL` | GraphQL | Traces GraphQL operations and resolvers |
+| `INSTRUMENTATION_GRPC` | gRPC | Traces gRPC calls |
+| `INSTRUMENTATION_HAPI` | Hapi | Traces Hapi framework operations |
+| `INSTRUMENTATION_HTTP` | Node.js HTTP/HTTPS | Traces HTTP requests and responses |
+| `INSTRUMENTATION_IOREDIS` | ioredis | Traces ioredis Redis client operations |
+| `INSTRUMENTATION_KAFKAJS` | KafkaJS | Traces Kafka message operations |
+| `INSTRUMENTATION_KNEX` | Knex.js | Traces Knex query builder operations |
+| `INSTRUMENTATION_KOA` | Koa | Traces Koa middleware and routes |
+| `INSTRUMENTATION_LRU_MEMOIZER` | lru-memoizer | Traces LRU memoization operations |
+| `INSTRUMENTATION_MEMCACHED` | memcached | Traces Memcached operations |
+| `INSTRUMENTATION_MONGODB` | MongoDB | Traces MongoDB database operations |
+| `INSTRUMENTATION_MONGOOSE` | Mongoose | Traces Mongoose ODM operations |
+| `INSTRUMENTATION_MYSQL` | mysql | Traces MySQL database operations |
+| `INSTRUMENTATION_MYSQL2` | mysql2 | Traces MySQL2 database operations |
+| `INSTRUMENTATION_NESTJS_CORE` | NestJS | Traces NestJS core operations |
+| `INSTRUMENTATION_NET` | Node.js net | Traces network socket operations |
+| `INSTRUMENTATION_OPENAI` | OpenAI | Traces OpenAI API calls |
+| `INSTRUMENTATION_ORACLEDB` | oracledb | Traces Oracle database operations |
+| `INSTRUMENTATION_PG` | pg (PostgreSQL) | Traces PostgreSQL database operations |
+| `INSTRUMENTATION_PINO` | Pino | Instruments Pino logging library |
+| `INSTRUMENTATION_REDIS` | redis | Traces Redis client operations |
+| `INSTRUMENTATION_RESTIFY` | Restify | Traces Restify framework operations |
+| `INSTRUMENTATION_RUNTIME_NODE` | Node.js runtime | Instruments Node.js runtime metrics |
+| `INSTRUMENTATION_SOCKET_IO` | Socket.IO | Traces Socket.IO events and operations |
+| `INSTRUMENTATION_UNDICI` | undici | Traces HTTP requests via undici client |
+| `INSTRUMENTATION_WINSTON` | Winston | Instruments Winston logging library |
 
 ### Tracing
 
