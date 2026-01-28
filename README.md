@@ -187,6 +187,86 @@ try {
 }
 ```
 
+#### Active Spans with Context
+
+Use `startActiveSpan` to automatically set the current active span in the context. This is useful for nested operations where you want child spans to automatically reference the parent:
+
+```typescript
+import { getTracer } from '@intangles/telemetry';
+
+const tracer = getTracer('my-component');
+
+// startActiveSpan automatically manages the span context
+const result = tracer.startActiveSpan('parent-operation', (parentSpan) => {
+  parentSpan.setAttribute('user.id', '12345');
+  
+  // Any child spans created here will automatically have parentSpan as parent
+  const childResult = tracer.startActiveSpan('child-operation', (childSpan) => {
+    childSpan.setAttribute('step', 'processing');
+    // Do work...
+    return 'child-result';
+  });
+  
+  return childResult;
+});
+```
+
+**Key differences from `startSpan`:**
+- Automatically manages span context
+- Child spans inherit parent context automatically
+- Better for async/await patterns with proper context propagation
+- Requires a callback function that receives the span and returns the result
+
+#### Span Decorator
+
+Use the `@SpanDecorator` decorator for automatic span creation around methods without explicit span management:
+
+```typescript
+import { SpanDecorator } from '@intangles/telemetry';
+
+class UserService {
+  // Basic decorator usage - uses method name as span name
+  @SpanDecorator()
+  async getUser(id: string) {
+    // Automatically creates a span named 'getUser'
+    // Tracks execution time, arguments, and exceptions
+    return await db.users.findById(id);
+  }
+
+  // Custom span name
+  @SpanDecorator('user-lookup')
+  async findUserByEmail(email: string) {
+    // Creates a span named 'user-lookup'
+    return await db.users.findByEmail(email);
+  }
+
+  // With custom attributes
+  @SpanDecorator('save-user', {
+    attributes: {
+      'service': 'user-management',
+      'operation': 'create'
+    }
+  })
+  async saveUser(user: User) {
+    // Automatically includes custom attributes
+    return await db.users.save(user);
+  }
+}
+```
+
+**What the decorator tracks automatically:**
+- Method execution time (`duration_ms` attribute)
+- Execution status (`success` or `error`)
+- Method arguments (for primitives and JSON-serializable objects as `arg0`, `arg1`, etc.)
+- Exceptions with full stack traces
+- Both synchronous and asynchronous methods
+- Promise rejections
+
+**Usage Guidelines:**
+- Use `@SpanDecorator()` for class methods when you want automatic tracing with minimal code
+- Use `startActiveSpan` for more complex scenarios with explicit context management
+- Use `startSpan` when you need fine-grained control over span lifecycle
+
 ### Logging
 
 ```typescript

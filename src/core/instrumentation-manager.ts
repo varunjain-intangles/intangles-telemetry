@@ -13,6 +13,7 @@ import {
 import { CustomTracer } from "./custom-tracer";
 import { CustomLogger } from "./custom-logger";
 import { CustomMeter } from "./custom-meter";
+import { Span, SpanOptions } from "../types/tracer";
 
 /**
  * Interface representing the expected shape of an OTel instrumentation module
@@ -243,4 +244,116 @@ export class InstrumentationManager {
 
     await Promise.all(shutdownPromises);
   }
+}
+
+/**
+ * Decorator for automatically creating spans around method execution.
+ * Records method execution time, arguments, and any exceptions.
+ *
+ * @param operationName - Name of the span (defaults to method name)
+ * @param options - Additional span options (attributes, kind, etc.)
+ *
+ * @example
+ * ```typescript
+ * class MyService {
+ *   @Span('user-lookup')
+ *   async getUser(id: string) {
+ *     // Method implementation
+ *   }
+ *
+ *   @Span('process-order', { attributes: { 'component': 'order-service' } })
+ *   async processOrder(order: Order) {
+ *     // Method implementation
+ *   }
+ * }
+ * ```
+ */
+export function Span(operationName?: string, options?: SpanOptions) {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor,
+  ) {
+    const originalMethod = descriptor.value;
+    const spanName = operationName || propertyKey;
+
+    descriptor.value = function (...args: any[]) {
+      const manager = InstrumentationManager.getInstance();
+      if (!manager) {
+        // If InstrumentationManager is not initialized, just call the original method
+        return originalMethod.apply(this, args);
+      }
+
+      const tracer = manager.getTracer(target.constructor.name);
+      if (!tracer) {
+        return originalMethod.apply(this, args);
+      }
+
+      const startTime = Date.now();
+      const span = tracer.startActiveSpan(spanName, (span) => {
+        try {
+          // Set custom attributes
+          if (options?.attributes) {
+            Object.entries(options.attributes).forEach(([key, value]) => {
+              span.setAttribute(key, value);
+            });
+          }
+
+          // Add method arguments as attributes
+          args.forEach((arg, index) => {
+            if (
+              typeof arg === "string" ||
+              typeof arg === "number" ||
+              typeof arg === "boolean"
+            ) {
+              span.setAttribute(`arg${index}`, arg);
+            } else if (arg && typeof arg === "object") {
+              try {
+                span.setAttribute(`arg${index}`, JSON.stringify(arg));
+              } catch {
+                // Skip if can't serialize
+              }
+            }
+          });
+
+          const result = originalMethod.apply(this, args);
+
+          // Handle both promise and non-promise returns
+          if (result instanceof Promise) {
+            return result
+              .then((value: any) => {
+                const duration = Date.now() - startTime;
+                span.setAttribute("duration_ms", duration);
+                span.setAttribute("status", "success");
+                span.end();
+                return value;
+              })
+              .catch((error: Error) => {
+                const duration = Date.now() - startTime;
+                span.setAttribute("duration_ms", duration);
+                span.setAttribute("status", "error");
+                span.recordException(error);
+                span.end();
+                throw error;
+              });
+          } else {
+            const duration = Date.now() - startTime;
+            span.setAttribute("duration_ms", duration);
+            span.setAttribute("status", "success");
+            span.end();
+            return result;
+          }
+        } catch (error) {
+          span.setAttribute("status", "error");
+          if (error instanceof Error) {
+            span.recordException(error);
+          }
+          span.end();
+          throw error;
+        }
+      });
+    };
+
+    return descriptor;
+  };
 }

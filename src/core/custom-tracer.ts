@@ -114,10 +114,11 @@ export class CustomTracer implements Tracer {
       return fn(customSpan);
     };
 
-    return (this.otelTracer.startActiveSpan as any)(
+    // Call startActiveSpan - parameter order: name, options, fn
+    return (this.otelTracer as any).startActiveSpan(
       name,
-      otelFn,
       otelOptions,
+      otelFn,
     ) as T;
   }
 }
