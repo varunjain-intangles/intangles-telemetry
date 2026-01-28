@@ -131,7 +131,7 @@ class InstrumentationManager {
             // When using NodeSdk, get logger from global API
             const { logs } = require("@opentelemetry/api-logs");
             const otelLogger = logs.getLogger(name);
-            return new custom_logger_1.CustomLogger(otelLogger);
+            return new custom_logger_1.CustomLogger(otelLogger, this.config.injectCodeAttributes);
         }
         return this.loggerProvider?.getLogger(name);
     }

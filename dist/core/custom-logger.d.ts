@@ -2,7 +2,8 @@ import { Logger as OTelLogger } from "@opentelemetry/api-logs";
 import { Logger, LogRecord } from "../types/logger";
 export declare class CustomLogger implements Logger {
     private otelLogger;
-    constructor(otelLogger: OTelLogger);
+    private injectCodeAttributes;
+    constructor(otelLogger: OTelLogger, injectCodeAttributes?: boolean);
     emit(logRecord: LogRecord): void;
     debug(message: string, attributes?: {
         [key: string]: any;

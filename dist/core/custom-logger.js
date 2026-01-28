@@ -1,16 +1,24 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CustomLogger = void 0;
+const code_attributes_1 = require("./code-attributes");
 class CustomLogger {
-    constructor(otelLogger) {
+    constructor(otelLogger, injectCodeAttributes = false) {
         this.otelLogger = otelLogger;
+        this.injectCodeAttributes = injectCodeAttributes;
     }
     emit(logRecord) {
+        const attributes = logRecord.attributes ? { ...logRecord.attributes } : {};
+        // Inject code attributes if enabled
+        if (this.injectCodeAttributes) {
+            const codeAttrs = code_attributes_1.CodeAttributes.getCodeAttributes(2); // Skip: emit -> caller
+            Object.assign(attributes, codeAttrs);
+        }
         this.otelLogger.emit({
             severityNumber: logRecord.severityNumber,
             severityText: logRecord.severityText,
             body: logRecord.body,
-            attributes: logRecord.attributes,
+            attributes,
             timestamp: logRecord.timestamp,
         });
     }

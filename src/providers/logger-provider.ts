@@ -55,7 +55,9 @@ export class LogProvider {
 
   getLogger(name: string) {
     const otelLogger = this.provider?.getLogger(name);
-    return otelLogger ? new CustomLogger(otelLogger) : undefined;
+    return otelLogger
+      ? new CustomLogger(otelLogger, this.config.injectCodeAttributes)
+      : undefined;
   }
 
   getLogRecordProcessors() {

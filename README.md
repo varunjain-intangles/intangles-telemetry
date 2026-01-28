@@ -403,19 +403,36 @@ logger.error(
     retryCount: 2
   }
 );
-
-// Critical system error
-logger.emit({
-  severityNumber: 21, // FATAL
-  severityText: 'FATAL',
-  body: 'Database connection lost',
-  attributes: {
-    database: 'postgres',
-    host: 'db.example.com',
-    impact: 'high'
-  }
-});
 ```
+
+#### Automatic Code Attributes for Logs
+
+When `injectCodeAttributes: true` is configured, all log records automatically include code location information:
+
+```typescript
+import { getLogger, initInstrumentation } from '@intangles/telemetry';
+
+await initInstrumentation({
+  serviceName: 'my-service',
+  exporters: {
+    logs: 'otlp'
+  },
+  injectCodeAttributes: true  // Automatically inject code attributes to logs
+});
+
+const logger = getLogger('my-component');
+
+// Log automatically includes: code.function.name, code.file.path, code.line.number, code.column.number
+logger.info('User registered', { userId: '12345', plan: 'premium' });
+logger.warn('High memory usage detected', { memory: '512MB', threshold: '256MB' });
+```
+
+**Benefits for Logging:**
+- Automatically track where logs originated in your code
+- No manual code location tracking needed
+- Integrates seamlessly with existing log records
+- Preserves all custom attributes you provide
+- Makes debugging and correlation much easier
 
 #### Severity Levels
 

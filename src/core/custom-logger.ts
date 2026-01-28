@@ -1,19 +1,30 @@
 import { Logger as OTelLogger } from "@opentelemetry/api-logs";
 import { Logger, LogRecord } from "../types/logger";
+import { CodeAttributes } from "./code-attributes";
 
 export class CustomLogger implements Logger {
   private otelLogger: OTelLogger;
+  private injectCodeAttributes: boolean;
 
-  constructor(otelLogger: OTelLogger) {
+  constructor(otelLogger: OTelLogger, injectCodeAttributes: boolean = false) {
     this.otelLogger = otelLogger;
+    this.injectCodeAttributes = injectCodeAttributes;
   }
 
   emit(logRecord: LogRecord): void {
+    const attributes = logRecord.attributes ? { ...logRecord.attributes } : {};
+
+    // Inject code attributes if enabled
+    if (this.injectCodeAttributes) {
+      const codeAttrs = CodeAttributes.getCodeAttributes(2); // Skip: emit -> caller
+      Object.assign(attributes, codeAttrs);
+    }
+
     this.otelLogger.emit({
       severityNumber: logRecord.severityNumber,
       severityText: logRecord.severityText,
       body: logRecord.body,
-      attributes: logRecord.attributes,
+      attributes,
       timestamp: logRecord.timestamp,
     });
   }
