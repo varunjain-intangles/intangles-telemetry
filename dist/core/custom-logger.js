@@ -4,7 +4,7 @@ exports.CustomLogger = void 0;
 const code_attributes_1 = require("./code-attributes");
 class CustomLogger {
     constructor(otelLogger, injectCodeAttributes = false) {
-        this.stackTraceSkip = 2; // Default skip for log methods
+        this.stackTraceSkip = 1; // Default skip for log methods
         this.otelLogger = otelLogger;
         this.injectCodeAttributes = injectCodeAttributes;
     }
@@ -24,7 +24,7 @@ class CustomLogger {
         });
     }
     debug(message, attributes) {
-        this.stackTraceSkip = 3; // Adjust skip for debug method
+        this.stackTraceSkip = 2; // Adjust skip for debug method
         this.emit({
             severityNumber: 5, // DEBUG
             severityText: "DEBUG",
@@ -34,7 +34,7 @@ class CustomLogger {
         });
     }
     info(message, attributes) {
-        this.stackTraceSkip = 3; // Adjust skip for info method
+        this.stackTraceSkip = 2; // Adjust skip for info method
         this.emit({
             severityNumber: 9, // INFO
             severityText: "INFO",
@@ -44,7 +44,7 @@ class CustomLogger {
         });
     }
     warn(message, attributes) {
-        this.stackTraceSkip = 3; // Adjust skip for warn method
+        this.stackTraceSkip = 2; // Adjust skip for warn method
         this.emit({
             severityNumber: 13, // WARN
             severityText: "WARN",
@@ -54,7 +54,7 @@ class CustomLogger {
         });
     }
     error(message, attributes) {
-        this.stackTraceSkip = 3; // Adjust skip for error method
+        this.stackTraceSkip = 2; // Adjust skip for error method
         this.emit({
             severityNumber: 17, // ERROR
             severityText: "ERROR",

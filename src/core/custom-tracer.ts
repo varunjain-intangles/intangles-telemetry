@@ -73,7 +73,7 @@ export class CustomTracer implements Tracer {
 
     // Inject code attributes if enabled
     if (this.injectCodeAttributes) {
-      const codeAttrs = CodeAttributes.getCodeAttributes(2); // Skip: startSpan -> caller
+      const codeAttrs = CodeAttributes.getCodeAttributes(1); // Skip: startSpan -> caller
       Object.assign(otelOptions.attributes, codeAttrs);
     }
 
@@ -112,7 +112,7 @@ export class CustomTracer implements Tracer {
 
     // Inject code attributes if enabled
     if (this.injectCodeAttributes) {
-      const codeAttrs = CodeAttributes.getCodeAttributes(2); // Skip: startActiveSpan -> caller
+      const codeAttrs = CodeAttributes.getCodeAttributes(1); // Skip: startActiveSpan -> caller
       Object.assign(otelOptions.attributes, codeAttrs);
     }
 

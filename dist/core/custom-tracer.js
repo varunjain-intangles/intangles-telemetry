@@ -49,7 +49,7 @@ class CustomTracer {
         };
         // Inject code attributes if enabled
         if (this.injectCodeAttributes) {
-            const codeAttrs = code_attributes_1.CodeAttributes.getCodeAttributes(2); // Skip: startSpan -> caller
+            const codeAttrs = code_attributes_1.CodeAttributes.getCodeAttributes(1); // Skip: startSpan -> caller
             Object.assign(otelOptions.attributes, codeAttrs);
         }
         // Handle parent span
@@ -83,7 +83,7 @@ class CustomTracer {
         }
         // Inject code attributes if enabled
         if (this.injectCodeAttributes) {
-            const codeAttrs = code_attributes_1.CodeAttributes.getCodeAttributes(2); // Skip: startActiveSpan -> caller
+            const codeAttrs = code_attributes_1.CodeAttributes.getCodeAttributes(1); // Skip: startActiveSpan -> caller
             Object.assign(otelOptions.attributes, codeAttrs);
         }
         // Handle parent span
