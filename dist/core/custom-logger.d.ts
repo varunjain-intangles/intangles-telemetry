@@ -3,6 +3,7 @@ import { Logger, LogRecord } from "../types/logger";
 export declare class CustomLogger implements Logger {
     private otelLogger;
     private injectCodeAttributes;
+    private stackTraceSkip;
     constructor(otelLogger: OTelLogger, injectCodeAttributes?: boolean);
     emit(logRecord: LogRecord): void;
     debug(message: string, attributes?: {

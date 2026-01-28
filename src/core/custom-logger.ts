@@ -5,7 +5,7 @@ import { CodeAttributes } from "./code-attributes";
 export class CustomLogger implements Logger {
   private otelLogger: OTelLogger;
   private injectCodeAttributes: boolean;
-
+  private stackTraceSkip: number = 2; // Default skip for log methods
   constructor(otelLogger: OTelLogger, injectCodeAttributes: boolean = false) {
     this.otelLogger = otelLogger;
     this.injectCodeAttributes = injectCodeAttributes;
@@ -16,7 +16,7 @@ export class CustomLogger implements Logger {
 
     // Inject code attributes if enabled
     if (this.injectCodeAttributes) {
-      const codeAttrs = CodeAttributes.getCodeAttributes(2); // Skip: emit -> caller
+      const codeAttrs = CodeAttributes.getCodeAttributes(this.stackTraceSkip); // Skip: emit -> caller -> actual code
       Object.assign(attributes, codeAttrs);
     }
 
@@ -30,6 +30,7 @@ export class CustomLogger implements Logger {
   }
 
   debug(message: string, attributes?: { [key: string]: any }): void {
+    this.stackTraceSkip = 3; // Adjust skip for debug method
     this.emit({
       severityNumber: 5, // DEBUG
       severityText: "DEBUG",
@@ -40,6 +41,7 @@ export class CustomLogger implements Logger {
   }
 
   info(message: string, attributes?: { [key: string]: any }): void {
+    this.stackTraceSkip = 3; // Adjust skip for info method
     this.emit({
       severityNumber: 9, // INFO
       severityText: "INFO",
@@ -50,6 +52,7 @@ export class CustomLogger implements Logger {
   }
 
   warn(message: string, attributes?: { [key: string]: any }): void {
+    this.stackTraceSkip = 3; // Adjust skip for warn method
     this.emit({
       severityNumber: 13, // WARN
       severityText: "WARN",
@@ -60,6 +63,7 @@ export class CustomLogger implements Logger {
   }
 
   error(message: string, attributes?: { [key: string]: any }): void {
+    this.stackTraceSkip = 3; // Adjust skip for error method
     this.emit({
       severityNumber: 17, // ERROR
       severityText: "ERROR",
