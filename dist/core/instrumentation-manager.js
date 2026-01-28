@@ -50,14 +50,14 @@ class InstrumentationManager {
         this.config = config;
         InstrumentationManager.instance = this;
     }
-    init() {
+    async init() {
         if (this.config.autoInstrument) {
             // Use NodeSDK for auto-instrumentation
             this.initWithNodeSdk();
         }
         else {
             // Manual provider initialization
-            this.initManualProviders();
+            await this.initManualProviders();
         }
     }
     initWithNodeSdk() {
@@ -86,7 +86,7 @@ class InstrumentationManager {
         const sdk = new sdk_node_1.NodeSDK(sdkOptions);
         sdk.start();
     }
-    initManualProviders() {
+    async initManualProviders() {
         // Initialize providers manually
         if (this.config.exporters?.traces) {
             this.tracerProvider = new tracer_provider_1.TracerProvider(this.config);
@@ -102,14 +102,13 @@ class InstrumentationManager {
         }
         // Initialize instrumentations
         const instrumentations = [];
-        this.config.instrumentations?.forEach((element) => {
+        await this.config.instrumentations?.forEach(async (packageName) => {
             try {
-                this.loadInstrumentation(element).then((instrumentation) => {
-                    instrumentations.push(instrumentation);
-                });
+                const instrumentation = await this.loadInstrumentation(packageName);
+                instrumentations.push(instrumentation);
             }
             catch (error) {
-                console.error(`Failed to load instrumentation ${element}:`, error);
+                // Error already logged in loadInstrumentation
             }
         });
         const sdkOptions = {

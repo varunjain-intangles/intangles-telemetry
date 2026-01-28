@@ -51,8 +51,10 @@ var instrumentation_manager_2 = require("./core/instrumentation-manager");
 Object.defineProperty(exports, "SpanDecorator", { enumerable: true, get: function () { return instrumentation_manager_2.Span; } });
 function initInstrumentation(config) {
     const manager = new instrumentation_manager_1.InstrumentationManager(config);
-    manager.init();
-    return manager;
+    manager.init().then(() => {
+        ;
+        return manager;
+    });
 }
 function getTracer(name) {
     return instrumentation_manager_1.InstrumentationManager.getInstance()?.getTracer(name);

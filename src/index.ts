@@ -49,7 +49,9 @@ export { Meter, Counter, Histogram, UpDownCounter, MetricOptions } from './types
 
 export function initInstrumentation(config: InstrumentationConfig) {
   const manager = new InstrumentationManager(config);
-  manager.init();
+  manager.init().then(() => {;
+    return manager;
+  });
   return manager;
 }
 

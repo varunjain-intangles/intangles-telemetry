@@ -10,7 +10,7 @@ export declare class InstrumentationManager {
     private loggerProvider?;
     private metricProvider?;
     constructor(config: InstrumentationConfig);
-    init(): void;
+    init(): Promise<void>;
     private initWithNodeSdk;
     private initManualProviders;
     /**
