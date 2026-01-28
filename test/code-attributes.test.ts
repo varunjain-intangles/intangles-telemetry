@@ -104,7 +104,7 @@ describe("CodeAttributes", () => {
     test("should capture code attributes during function execution", () => {
       function myTestFunction() {
         // Get attributes from within the function
-        return CodeAttributes.getCodeAttributes(1);
+        return CodeAttributes.getCodeAttributes(0);
       }
 
       const attributes = myTestFunction();

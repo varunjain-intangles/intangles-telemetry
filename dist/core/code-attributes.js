@@ -31,15 +31,27 @@ class CodeAttributes {
             // Use V8's stack trace API without creating an Error object
             const obj = {};
             Error.captureStackTrace(obj, this.getCodeAttributes);
-            const stack = obj.stack || "";
-            const lines = stack.split("\n");
-            // Skip internal frames (captureStackTrace adds the frame it's called from)
-            // Frame format: "at functionName (path/to/file.ts:line:column)"
-            const targetLine = lines[skipFrames]; // No +1 needed as captureStackTrace already skips its own frame
-            if (!targetLine) {
-                return {};
-            }
-            return this.parseStackLine(targetLine);
+            const detectorRegex = /at (.+?) \((.+?)\)/;
+            const stack = obj.stack
+                .split("\n")
+                .map((x) => x.trim())
+                .filter((x) => x.startsWith("at"))
+                .map((x) => x.match(detectorRegex))
+                .filter((x) => !!x);
+            const detections = stack.map((x) => {
+                const identifier = x[1];
+                const pathlinecol = x[2].split(":");
+                const column = pathlinecol.length > 2 ? parseInt(pathlinecol.pop() ?? "0") : 0;
+                const line = pathlinecol.length > 1 ? parseInt(pathlinecol.pop() ?? "0") : 0;
+                const p = pathlinecol.join(":");
+                return {
+                    "code.column.number": column,
+                    "code.function.name": identifier,
+                    "code.file.path": p,
+                    "code.line.number": line,
+                };
+            });
+            return detections[skipFrames] || {};
         }
         catch (error) {
             // If anything goes wrong, return empty object
