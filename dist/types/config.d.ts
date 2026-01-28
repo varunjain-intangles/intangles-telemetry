@@ -1,0 +1,52 @@
+export interface InstrumentationConfig {
+    serviceName: string;
+    serviceVersion?: string;
+    exporters?: {
+        traces?: "otlp" | "console";
+        logs?: "otlp" | "console";
+        metrics?: "otlp" | "console";
+    };
+    endpoints?: Record<string, string>;
+    autoInstrument?: boolean;
+    instrumentations?: SupportedInstrumentation[];
+}
+export declare const INSTRUMENTATION_AMQPLIB = "@opentelemetry/instrumentation-amqplib";
+export declare const INSTRUMENTATION_AWS_LAMBDA = "@opentelemetry/instrumentation-aws-lambda";
+export declare const INSTRUMENTATION_AWS_SDK = "@opentelemetry/instrumentation-aws-sdk";
+export declare const INSTRUMENTATION_BUNYAN = "@opentelemetry/instrumentation-bunyan";
+export declare const INSTRUMENTATION_CASSANDRA_DRIVER = "@opentelemetry/instrumentation-cassandra-driver";
+export declare const INSTRUMENTATION_CONNECT = "@opentelemetry/instrumentation-connect";
+export declare const INSTRUMENTATION_CUCUMBER = "@opentelemetry/instrumentation-cucumber";
+export declare const INSTRUMENTATION_DATALOADER = "@opentelemetry/instrumentation-dataloader";
+export declare const INSTRUMENTATION_DNS = "@opentelemetry/instrumentation-dns";
+export declare const INSTRUMENTATION_EXPRESS = "@opentelemetry/instrumentation-express";
+export declare const INSTRUMENTATION_FS = "@opentelemetry/instrumentation-fs";
+export declare const INSTRUMENTATION_GENERIC_POOL = "@opentelemetry/instrumentation-generic-pool";
+export declare const INSTRUMENTATION_GRAPHQL = "@opentelemetry/instrumentation-graphql";
+export declare const INSTRUMENTATION_GRPC = "@opentelemetry/instrumentation-grpc";
+export declare const INSTRUMENTATION_HAPI = "@opentelemetry/instrumentation-hapi";
+export declare const INSTRUMENTATION_HTTP = "@opentelemetry/instrumentation-http";
+export declare const INSTRUMENTATION_IOREDIS = "@opentelemetry/instrumentation-ioredis";
+export declare const INSTRUMENTATION_KAFKAJS = "@opentelemetry/instrumentation-kafkajs";
+export declare const INSTRUMENTATION_KNEX = "@opentelemetry/instrumentation-knex";
+export declare const INSTRUMENTATION_KOA = "@opentelemetry/instrumentation-koa";
+export declare const INSTRUMENTATION_LRU_MEMOIZER = "@opentelemetry/instrumentation-lru-memoizer";
+export declare const INSTRUMENTATION_MEMCACHED = "@opentelemetry/instrumentation-memcached";
+export declare const INSTRUMENTATION_MONGODB = "@opentelemetry/instrumentation-mongodb";
+export declare const INSTRUMENTATION_MONGOOSE = "@opentelemetry/instrumentation-mongoose";
+export declare const INSTRUMENTATION_MYSQL = "@opentelemetry/instrumentation-mysql";
+export declare const INSTRUMENTATION_MYSQL2 = "@opentelemetry/instrumentation-mysql2";
+export declare const INSTRUMENTATION_NESTJS_CORE = "@opentelemetry/instrumentation-nestjs-core";
+export declare const INSTRUMENTATION_NET = "@opentelemetry/instrumentation-net";
+export declare const INSTRUMENTATION_OPENAI = "@opentelemetry/instrumentation-openai";
+export declare const INSTRUMENTATION_ORACLEDB = "@opentelemetry/instrumentation-oracledb";
+export declare const INSTRUMENTATION_PG = "@opentelemetry/instrumentation-pg";
+export declare const INSTRUMENTATION_PINO = "@opentelemetry/instrumentation-pino";
+export declare const INSTRUMENTATION_REDIS = "@opentelemetry/instrumentation-redis";
+export declare const INSTRUMENTATION_RESTIFY = "@opentelemetry/instrumentation-restify";
+export declare const INSTRUMENTATION_RUNTIME_NODE = "@opentelemetry/instrumentation-runtime-node";
+export declare const INSTRUMENTATION_SOCKET_IO = "@opentelemetry/instrumentation-socket.io";
+export declare const INSTRUMENTATION_UNDICI = "@opentelemetry/instrumentation-undici";
+export declare const INSTRUMENTATION_WINSTON = "@opentelemetry/instrumentation-winston";
+export type SupportedInstrumentation = typeof INSTRUMENTATION_AMQPLIB | typeof INSTRUMENTATION_AWS_LAMBDA | typeof INSTRUMENTATION_AWS_SDK | typeof INSTRUMENTATION_BUNYAN | typeof INSTRUMENTATION_CASSANDRA_DRIVER | typeof INSTRUMENTATION_CONNECT | typeof INSTRUMENTATION_CUCUMBER | typeof INSTRUMENTATION_DATALOADER | typeof INSTRUMENTATION_DNS | typeof INSTRUMENTATION_EXPRESS | typeof INSTRUMENTATION_FS | typeof INSTRUMENTATION_GENERIC_POOL | typeof INSTRUMENTATION_GRAPHQL | typeof INSTRUMENTATION_GRPC | typeof INSTRUMENTATION_HAPI | typeof INSTRUMENTATION_HTTP | typeof INSTRUMENTATION_IOREDIS | typeof INSTRUMENTATION_KAFKAJS | typeof INSTRUMENTATION_KNEX | typeof INSTRUMENTATION_KOA | typeof INSTRUMENTATION_LRU_MEMOIZER | typeof INSTRUMENTATION_MEMCACHED | typeof INSTRUMENTATION_MONGODB | typeof INSTRUMENTATION_MONGOOSE | typeof INSTRUMENTATION_MYSQL | typeof INSTRUMENTATION_MYSQL2 | typeof INSTRUMENTATION_NESTJS_CORE | typeof INSTRUMENTATION_NET | typeof INSTRUMENTATION_OPENAI | typeof INSTRUMENTATION_ORACLEDB | typeof INSTRUMENTATION_PG | typeof INSTRUMENTATION_PINO | typeof INSTRUMENTATION_REDIS | typeof INSTRUMENTATION_RESTIFY | typeof INSTRUMENTATION_RUNTIME_NODE | typeof INSTRUMENTATION_SOCKET_IO | typeof INSTRUMENTATION_UNDICI | typeof INSTRUMENTATION_WINSTON;
+//# sourceMappingURL=config.d.ts.map
