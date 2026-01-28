@@ -267,6 +267,65 @@ class UserService {
 - Use `startActiveSpan` for more complex scenarios with explicit context management
 - Use `startSpan` when you need fine-grained control over span lifecycle
 
+#### Code Attributes
+
+Use `CodeAttributes` to capture code location information (file path, line number, column number, function name) from the call stack. This is useful for automatically enriching spans with source code context:
+
+```typescript
+import { CodeAttributes, getTracer } from '@intangles/telemetry';
+
+const tracer = getTracer('my-component');
+
+function processData(data: string) {
+  const span = tracer.startSpan('data-processing');
+  
+  // Capture code location attributes from the call stack
+  const codeAttrs = CodeAttributes.getCodeAttributes();
+  
+  span.setAttribute('code.function.name', codeAttrs.functionName);
+  span.setAttribute('code.file.path', codeAttrs.filePath);
+  span.setAttribute('code.line.number', codeAttrs.lineNumber);
+  span.setAttribute('code.column.number', codeAttrs.columnNumber);
+  
+  try {
+    // Process data...
+    span.setStatus({ code: 'OK' });
+  } catch (error) {
+    span.recordException(error);
+  } finally {
+    span.end();
+  }
+}
+
+// You can also skip frames if needed (e.g., when called through middleware)
+const codeAttrs = CodeAttributes.getCodeAttributes(3); // Skip 3 frames
+```
+
+**Code Attributes Interface:**
+
+```typescript
+interface CodeAttributesData {
+  functionName: string;
+  filePath: string;
+  lineNumber: number;
+  columnNumber: number;
+}
+```
+
+**Available Methods:**
+
+- `CodeAttributes.getCodeAttributes(skipFrames?: number)` - Returns all code attributes
+  - `skipFrames`: Number of stack frames to skip (default: 0)
+- `CodeAttributes.getFunctionName(skipFrames?: number)` - Get just the function name
+- `CodeAttributes.getFilePath(skipFrames?: number)` - Get just the file path
+- `CodeAttributes.getLineNumber(skipFrames?: number)` - Get just the line number
+- `CodeAttributes.getColumnNumber(skipFrames?: number)` - Get just the column number
+
+**When to use `skipFrames`:**
+- Default (0): Captures the immediate caller's location
+- Use higher values when called through utility functions or middleware layers
+- Typical values: 1-3 for wrapper functions, 2-4 for middleware
+
 ### Logging
 
 ```typescript
@@ -462,14 +521,22 @@ The `initInstrumentation` function accepts an `InstrumentationConfig` object wit
 
 ### Functions
 
-- `initInstrumentation(config: InstrumentationConfig): InstrumentationManager` - Initialize telemetry
+- `initInstrumentation(config: InstrumentationConfig): Promise<InstrumentationManager>` - Initialize telemetry (async)
 - `getTracer(name: string): Tracer | undefined` - Get a tracer instance
 - `getLogger(name: string): Logger | undefined` - Get a logger instance  
 - `getMeter(name: string): Meter | undefined` - Get a meter instance
 
+### Classes
+
+- `CodeAttributes` - Utility class for extracting code location attributes from the call stack
+  - Static methods: `getCodeAttributes()`, `getFunctionName()`, `getFilePath()`, `getLineNumber()`, `getColumnNumber()`
+  - Follows OpenTelemetry semantic conventions for code attributes
+  - Useful for enriching spans with source code context
+
 ### Types
 
 - `InstrumentationConfig` - Configuration interface
+- `CodeAttributesData` - Code location attributes interface with `functionName`, `filePath`, `lineNumber`, `columnNumber`
 - `Tracer` - Tracing interface with `startSpan()` and `startActiveSpan()` methods
 - `Span` - Span interface with `setAttribute()`, `addEvent()`, `setStatus()`, `end()` methods
 - `Logger` - Logging interface with `emit()` method

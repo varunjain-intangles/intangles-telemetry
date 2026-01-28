@@ -44,6 +44,7 @@ export {
 } from './types/config';
 export { Tracer, Span, SpanOptions } from './types/tracer';
 export { Span as SpanDecorator} from './core/instrumentation-manager';
+export { CodeAttributes, CodeAttributesData } from './core/code-attributes';
 export { Logger, LogRecord } from './types/logger';
 export { Meter, Counter, Histogram, UpDownCounter, MetricOptions } from './types/meter';
 
