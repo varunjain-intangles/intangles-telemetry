@@ -21,7 +21,7 @@ export class CodeAttributes {
    * Uses V8's stack trace API via Error.captureStackTrace() without creating
    * an actual Error object.
    *
-   * @param skipFrames - Number of stack frames to skip (default: 3)
+   * @param skipFrames - Number of stack frames to skip (default: 2)
    *                    Accounts for: getCodeAttributes -> decorator -> actual code
    * @returns Object containing code location attributes following OpenTelemetry conventions
    *
@@ -31,7 +31,7 @@ export class CodeAttributes {
    * span.setAttribute('code.function.name', codeAttrs['code.function.name']);
    * ```
    */
-  static getCodeAttributes(skipFrames: number = 3): CodeAttributesData {
+  static getCodeAttributes(skipFrames: number = 2): CodeAttributesData {
     try {
       // Use V8's stack trace API without creating an Error object
       const obj = {};

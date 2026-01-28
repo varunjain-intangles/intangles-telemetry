@@ -112,7 +112,7 @@ export class CustomTracer implements Tracer {
 
     // Inject code attributes if enabled
     if (this.injectCodeAttributes) {
-      const codeAttrs = CodeAttributes.getCodeAttributes(3); // Skip: startActiveSpan -> caller
+      const codeAttrs = CodeAttributes.getCodeAttributes(2); // Skip: startActiveSpan -> caller
       Object.assign(otelOptions.attributes, codeAttrs);
     }
 
