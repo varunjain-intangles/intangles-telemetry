@@ -6,6 +6,7 @@ import {
   Context,
 } from "@opentelemetry/api";
 import { Tracer, Span, SpanOptions } from "../types/tracer";
+import { CodeAttributes } from "./code-attributes";
 
 export class CustomSpan implements Span {
   private _otelSpan: OTelSpan;
@@ -55,18 +56,26 @@ export class CustomSpan implements Span {
 
 export class CustomTracer implements Tracer {
   private otelTracer: OTelTracer;
+  private injectCodeAttributes: boolean;
 
-  constructor(otelTracer: OTelTracer) {
+  constructor(otelTracer: OTelTracer, injectCodeAttributes: boolean = false) {
     this.otelTracer = otelTracer;
+    this.injectCodeAttributes = injectCodeAttributes;
   }
 
   startSpan(name: string, options?: SpanOptions): Span {
     const otelOptions: any = {
       kind: options?.kind,
-      attributes: options?.attributes,
+      attributes: options?.attributes || {},
       links: options?.links,
       startTime: options?.startTime,
     };
+
+    // Inject code attributes if enabled
+    if (this.injectCodeAttributes) {
+      const codeAttrs = CodeAttributes.getCodeAttributes(2); // Skip: startSpan -> caller
+      Object.assign(otelOptions.attributes, codeAttrs);
+    }
 
     // Handle parent span
     if (options?.parent) {
@@ -97,6 +106,14 @@ export class CustomTracer implements Tracer {
       if (options.links !== undefined) otelOptions.links = options.links;
       if (options.startTime !== undefined)
         otelOptions.startTime = options.startTime;
+    } else {
+      otelOptions.attributes = {};
+    }
+
+    // Inject code attributes if enabled
+    if (this.injectCodeAttributes) {
+      const codeAttrs = CodeAttributes.getCodeAttributes(3); // Skip: startActiveSpan -> caller
+      Object.assign(otelOptions.attributes, codeAttrs);
     }
 
     // Handle parent span

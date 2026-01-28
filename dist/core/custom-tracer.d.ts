@@ -15,7 +15,8 @@ export declare class CustomSpan implements Span {
 }
 export declare class CustomTracer implements Tracer {
     private otelTracer;
-    constructor(otelTracer: OTelTracer);
+    private injectCodeAttributes;
+    constructor(otelTracer: OTelTracer, injectCodeAttributes?: boolean);
     startSpan(name: string, options?: SpanOptions): Span;
     startActiveSpan<T>(name: string, fn: (span: Span) => T, options?: SpanOptions): T;
 }

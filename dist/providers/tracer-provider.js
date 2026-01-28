@@ -44,7 +44,9 @@ class TracerProvider {
     }
     getTracer(name) {
         const otelTracer = this.provider?.getTracer(name);
-        return otelTracer ? new custom_tracer_1.CustomTracer(otelTracer) : undefined;
+        return otelTracer
+            ? new custom_tracer_1.CustomTracer(otelTracer, this.config.injectCodeAttributes)
+            : undefined;
     }
     flush() {
         return this.provider?.forceFlush() || Promise.resolve();

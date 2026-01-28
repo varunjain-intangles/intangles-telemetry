@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CustomTracer = exports.CustomSpan = void 0;
+const code_attributes_1 = require("./code-attributes");
 class CustomSpan {
     constructor(otelSpan) {
         this._otelSpan = otelSpan;
@@ -35,16 +36,22 @@ class CustomSpan {
 }
 exports.CustomSpan = CustomSpan;
 class CustomTracer {
-    constructor(otelTracer) {
+    constructor(otelTracer, injectCodeAttributes = false) {
         this.otelTracer = otelTracer;
+        this.injectCodeAttributes = injectCodeAttributes;
     }
     startSpan(name, options) {
         const otelOptions = {
             kind: options?.kind,
-            attributes: options?.attributes,
+            attributes: options?.attributes || {},
             links: options?.links,
             startTime: options?.startTime,
         };
+        // Inject code attributes if enabled
+        if (this.injectCodeAttributes) {
+            const codeAttrs = code_attributes_1.CodeAttributes.getCodeAttributes(2); // Skip: startSpan -> caller
+            Object.assign(otelOptions.attributes, codeAttrs);
+        }
         // Handle parent span
         if (options?.parent) {
             if (options.parent instanceof CustomSpan) {
@@ -70,6 +77,14 @@ class CustomTracer {
                 otelOptions.links = options.links;
             if (options.startTime !== undefined)
                 otelOptions.startTime = options.startTime;
+        }
+        else {
+            otelOptions.attributes = {};
+        }
+        // Inject code attributes if enabled
+        if (this.injectCodeAttributes) {
+            const codeAttrs = code_attributes_1.CodeAttributes.getCodeAttributes(3); // Skip: startActiveSpan -> caller
+            Object.assign(otelOptions.attributes, codeAttrs);
         }
         // Handle parent span
         if (options?.parent) {

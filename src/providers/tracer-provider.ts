@@ -63,7 +63,9 @@ export class TracerProvider {
 
   getTracer(name: string) {
     const otelTracer = this.provider?.getTracer(name);
-    return otelTracer ? new CustomTracer(otelTracer) : undefined;
+    return otelTracer
+      ? new CustomTracer(otelTracer, this.config.injectCodeAttributes)
+      : undefined;
   }
 
   flush(): Promise<void> {

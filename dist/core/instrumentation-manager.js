@@ -122,7 +122,7 @@ class InstrumentationManager {
             // When using NodeSdk, get tracer from global API
             const { trace } = require("@opentelemetry/api");
             const otelTracer = trace.getTracer(name);
-            return new custom_tracer_1.CustomTracer(otelTracer);
+            return new custom_tracer_1.CustomTracer(otelTracer, this.config.injectCodeAttributes);
         }
         return this.tracerProvider?.getTracer(name);
     }

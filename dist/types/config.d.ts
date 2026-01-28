@@ -9,6 +9,7 @@ export interface InstrumentationConfig {
     endpoints?: Record<string, string>;
     autoInstrument?: boolean;
     instrumentations?: SupportedInstrumentation[];
+    injectCodeAttributes?: boolean;
 }
 export declare const INSTRUMENTATION_AMQPLIB = "@opentelemetry/instrumentation-amqplib";
 export declare const INSTRUMENTATION_AWS_LAMBDA = "@opentelemetry/instrumentation-aws-lambda";

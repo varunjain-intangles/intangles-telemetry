@@ -326,6 +326,44 @@ interface CodeAttributesData {
 - Use higher values when called through utility functions or middleware layers
 - Typical values: 1-3 for wrapper functions, 2-4 for middleware
 
+#### Automatic Code Attributes Injection
+
+Enable automatic injection of code attributes into all spans by setting `injectCodeAttributes: true` in the configuration. This automatically adds code location information to every span without manual effort:
+
+```typescript
+import { initInstrumentation } from '@intangles/telemetry';
+
+await initInstrumentation({
+  serviceName: 'my-service',
+  exporters: {
+    traces: 'otlp'
+  },
+  injectCodeAttributes: true  // Automatically inject code attributes
+});
+
+const tracer = getTracer('my-component');
+
+// Every span automatically includes code location attributes
+const span = tracer.startSpan('operation-name');
+// Automatically has: code.function.name, code.file.path, code.line.number, code.column.number
+span.end();
+```
+
+**What gets injected:**
+- `code.function.name` - Function or method name where span was created
+- `code.file.path` - Source file path
+- `code.line.number` - Line number in the source file
+- `code.column.number` - Column number in the source file
+
+**Benefits:**
+- Removes need to manually capture code location
+- Works with both `startSpan()` and `startActiveSpan()`
+- Works with `@SpanDecorator()` automatically
+- Follows OpenTelemetry semantic conventions
+- Zero overhead when disabled (default: false)
+
+**Note:** `injectCodeAttributes` applies to all spans created through `getTracer()`, making it ideal for applications where code location tracking is important for debugging and correlation.
+
 ### Logging
 
 ```typescript
@@ -516,6 +554,8 @@ The `initInstrumentation` function accepts an `InstrumentationConfig` object wit
 - `endpoints`: object (optional) - Configure exporter endpoints
   - `otlp`: string - OTLP endpoint URL (default: 'http://localhost:4318')
 - `autoInstrument`: boolean (optional) - Enable auto-instrumentation (default: false)
+- `instrumentations`: SupportedInstrumentation[] (optional) - Array of instrumentation packages to load in manual mode
+- `injectCodeAttributes`: boolean (optional) - Automatically inject code location attributes to all spans (default: false)
 
 ## API Reference
 

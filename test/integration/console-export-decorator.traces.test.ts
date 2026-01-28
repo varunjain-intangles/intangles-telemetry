@@ -69,6 +69,7 @@ describe("Integration Tests - Console Traces Decorator Export", () => {
         exporters: { traces: "console" },
         autoInstrument: false,
         instrumentations: [INSTRUMENTATION_HTTP, INSTRUMENTATION_EXPRESS],
+        injectCodeAttributes: true,
       });
 
       const testInstance = new TestClass();
