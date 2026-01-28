@@ -126,7 +126,7 @@ export class InstrumentationManager {
   private loadInstrumentation(packageName: string): Instrumentation {
     try {
       // 1. Dynamic import
-      const module: InstrumentationModule = import(packageName);
+      const module: InstrumentationModule = require(packageName);
 
       // 2. Find the class that looks like an Instrumentation (ends with 'Instrumentation')
       const InstrumentationClass = Object.values(module).find(
