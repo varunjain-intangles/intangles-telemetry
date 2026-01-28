@@ -35,12 +35,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/intangles/telemetry.git"
+    "url": "https://github.com:varunjain-intangles/intangles-telemetry.git"
   },
   "bugs": {
-    "url": "https://github.com/intangles/telemetry/issues"
+    "url": "https://github.com:varunjain-intangles/intangles-telemetry/issues"
   },
-  "homepage": "https://github.com/intangles/telemetry#readme",
+  "homepage": "https://github.com:varunjain-intangles/intangles-telemetry#readme",
   "engines": {
     "node": ">=14.0.0"
   },
