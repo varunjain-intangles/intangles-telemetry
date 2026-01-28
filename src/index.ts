@@ -47,9 +47,9 @@ export { Span as SpanDecorator} from './core/instrumentation-manager';
 export { Logger, LogRecord } from './types/logger';
 export { Meter, Counter, Histogram, UpDownCounter, MetricOptions } from './types/meter';
 
-export async function initInstrumentation(config: InstrumentationConfig) {
+export  function initInstrumentation(config: InstrumentationConfig) {
   const manager = new InstrumentationManager(config);
-  await manager.init()
+   manager.init()
   return manager;
 }
 

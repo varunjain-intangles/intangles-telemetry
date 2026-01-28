@@ -15,8 +15,7 @@ npm install @intangles/telemetry
 ```typescript
 import { initInstrumentation } from '@intangles/telemetry';
 
-// initInstrumentation is async and should be awaited
-await initInstrumentation({
+initInstrumentation({
   serviceName: 'my-service',
   serviceVersion: '1.0.0',
   exporters: {
@@ -35,8 +34,7 @@ await initInstrumentation({
 ```typescript
 import { initInstrumentation } from '@intangles/telemetry';
 
-// Initialize with auto-instrumentation enabled
-await initInstrumentation({
+initInstrumentation({
   serviceName: 'my-service',
   serviceVersion: '1.0.0',
   exporters: {
@@ -110,7 +108,7 @@ import {
 } from '@intangles/telemetry';
 
 // Configure specific instrumentations
-await initInstrumentation({
+initInstrumentation({
   serviceName: 'my-service',
   autoInstrument: false,
   exporters: {
@@ -464,7 +462,7 @@ The `initInstrumentation` function accepts an `InstrumentationConfig` object wit
 
 ### Functions
 
-- `initInstrumentation(config: InstrumentationConfig): Promise<InstrumentationManager>` - Initialize telemetry (async, must be awaited)
+- `initInstrumentation(config: InstrumentationConfig): InstrumentationManager` - Initialize telemetry
 - `getTracer(name: string): Tracer | undefined` - Get a tracer instance
 - `getLogger(name: string): Logger | undefined` - Get a logger instance  
 - `getMeter(name: string): Meter | undefined` - Get a meter instance

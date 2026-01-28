@@ -50,14 +50,14 @@ class InstrumentationManager {
         this.config = config;
         InstrumentationManager.instance = this;
     }
-    async init() {
+    init() {
         if (this.config.autoInstrument) {
             // Use NodeSDK for auto-instrumentation
             this.initWithNodeSdk();
         }
         else {
             // Manual provider initialization
-            await this.initManualProviders();
+            this.initManualProviders();
         }
     }
     initWithNodeSdk() {
@@ -86,7 +86,7 @@ class InstrumentationManager {
         const sdk = new sdk_node_1.NodeSDK(sdkOptions);
         sdk.start();
     }
-    async initManualProviders() {
+    initManualProviders() {
         // Initialize providers manually
         if (this.config.exporters?.traces) {
             this.tracerProvider = new tracer_provider_1.TracerProvider(this.config);
@@ -102,9 +102,9 @@ class InstrumentationManager {
         }
         // Initialize instrumentations
         const instrumentations = [];
-        await this.config.instrumentations?.forEach(async (packageName) => {
+        this.config.instrumentations?.forEach(async (packageName) => {
             try {
-                const instrumentation = await this.loadInstrumentation(packageName);
+                const instrumentation = this.loadInstrumentation(packageName);
                 instrumentations.push(instrumentation);
             }
             catch (error) {
@@ -128,10 +128,10 @@ class InstrumentationManager {
      * Dynamically loads and enables an OpenTelemetry instrumentation package.
      * @param packageName The npm package name (e.g., '@opentelemetry/instrumentation-http')
      */
-    async loadInstrumentation(packageName) {
+    loadInstrumentation(packageName) {
         try {
             // 1. Dynamic import
-            const module = await Promise.resolve(`${packageName}`).then(s => __importStar(require(s)));
+            const module = Promise.resolve(`${packageName}`).then(s => __importStar(require(s)));
             // 2. Find the class that looks like an Instrumentation (ends with 'Instrumentation')
             const InstrumentationClass = Object.values(module).find((exported) => typeof exported === "function" &&
                 exported.prototype instanceof Object &&

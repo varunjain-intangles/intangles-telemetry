@@ -34,13 +34,13 @@ export class InstrumentationManager {
     InstrumentationManager.instance = this;
   }
 
-  async init() {
+  init() {
     if (this.config.autoInstrument) {
       // Use NodeSDK for auto-instrumentation
       this.initWithNodeSdk();
     } else {
       // Manual provider initialization
-      await this.initManualProviders();
+      this.initManualProviders();
     }
   }
 
@@ -73,7 +73,7 @@ export class InstrumentationManager {
     sdk.start();
   }
 
-  private async initManualProviders() {
+  private initManualProviders() {
     // Initialize providers manually
     if (this.config.exporters?.traces) {
       this.tracerProvider = new TracerProvider(this.config);
@@ -91,9 +91,9 @@ export class InstrumentationManager {
     // Initialize instrumentations
     const instrumentations: Instrumentation[] = [];
 
-    await this.config.instrumentations?.forEach(async (packageName) => {
+    this.config.instrumentations?.forEach(async (packageName) => {
       try {
-        const instrumentation = await this.loadInstrumentation(packageName);
+        const instrumentation = this.loadInstrumentation(packageName);
         instrumentations.push(instrumentation);
       } catch (error) {
         // Error already logged in loadInstrumentation
@@ -123,12 +123,10 @@ export class InstrumentationManager {
    * Dynamically loads and enables an OpenTelemetry instrumentation package.
    * @param packageName The npm package name (e.g., '@opentelemetry/instrumentation-http')
    */
-  private async loadInstrumentation(
-    packageName: string,
-  ): Promise<Instrumentation> {
+  private loadInstrumentation(packageName: string): Instrumentation {
     try {
       // 1. Dynamic import
-      const module: InstrumentationModule = await import(packageName);
+      const module: InstrumentationModule = import(packageName);
 
       // 2. Find the class that looks like an Instrumentation (ends with 'Instrumentation')
       const InstrumentationClass = Object.values(module).find(
