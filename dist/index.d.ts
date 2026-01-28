@@ -6,7 +6,7 @@ export { Tracer, Span, SpanOptions } from './types/tracer';
 export { Span as SpanDecorator } from './core/instrumentation-manager';
 export { Logger, LogRecord } from './types/logger';
 export { Meter, Counter, Histogram, UpDownCounter, MetricOptions } from './types/meter';
-export declare function initInstrumentation(config: InstrumentationConfig): Promise<InstrumentationManager>;
+export declare function initInstrumentation(config: InstrumentationConfig): InstrumentationManager;
 export declare function getTracer(name: string): import("./core/custom-tracer").CustomTracer | undefined;
 export declare function getLogger(name: string): import("./core/custom-logger").CustomLogger | undefined;
 export declare function getMeter(name: string): import("./core/custom-meter").CustomMeter | undefined;

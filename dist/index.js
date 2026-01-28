@@ -49,9 +49,9 @@ Object.defineProperty(exports, "INSTRUMENTATION_UNDICI", { enumerable: true, get
 Object.defineProperty(exports, "INSTRUMENTATION_WINSTON", { enumerable: true, get: function () { return config_1.INSTRUMENTATION_WINSTON; } });
 var instrumentation_manager_2 = require("./core/instrumentation-manager");
 Object.defineProperty(exports, "SpanDecorator", { enumerable: true, get: function () { return instrumentation_manager_2.Span; } });
-async function initInstrumentation(config) {
+function initInstrumentation(config) {
     const manager = new instrumentation_manager_1.InstrumentationManager(config);
-    await manager.init();
+    manager.init();
     return manager;
 }
 function getTracer(name) {
