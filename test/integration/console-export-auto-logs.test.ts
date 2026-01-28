@@ -50,7 +50,7 @@ describe("Integration Tests - Console Logs Export", () => {
       initInstrumentation({
         serviceName: "integration-test-service",
         exporters: { logs: "console" },
-        autoInstrument: true,
+        injectCodeAttributes: true,
       });
 
       const logger = getLogger("test-component");

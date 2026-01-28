@@ -36,8 +36,8 @@ class CodeAttributes {
                 .split("\n")
                 .map((x) => x.trim())
                 .filter((x) => x.startsWith("at"))
-                .map((x) => x.match(detectorRegex))
-                .filter((x) => !!x);
+                .map((x) => x.match(detectorRegex));
+            // .filter((x: RegExpMatchArray | null) => !!x) as RegExpMatchArray[];
             const detections = stack.map((x) => {
                 const identifier = x[1];
                 const pathlinecol = x[2].split(":");

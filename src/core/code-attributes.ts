@@ -42,24 +42,26 @@ export class CodeAttributes {
         .split("\n")
         .map((x: string) => x.trim())
         .filter((x: string) => x.startsWith("at"))
-        .map((x: string) => x.match(detectorRegex))
-        .filter((x: RegExpMatchArray | null) => !!x) as RegExpMatchArray[];
+        .map((x: string) => x.match(detectorRegex)) as RegExpMatchArray[];
+      // .filter((x: RegExpMatchArray | null) => !!x) as RegExpMatchArray[];
 
-      const detections: CodeAttributesData[] = stack.map((x) => {
-        const identifier = x[1];
-        const pathlinecol = x[2].split(":");
-        const column =
-          pathlinecol.length > 2 ? parseInt(pathlinecol.pop() ?? "0") : 0;
-        const line =
-          pathlinecol.length > 1 ? parseInt(pathlinecol.pop() ?? "0") : 0;
-        const p = pathlinecol.join(":");
-        return {
-          "code.column.number": column,
-          "code.function.name": identifier,
-          "code.file.path": p,
-          "code.line.number": line,
-        };
-      });
+      const detections: CodeAttributesData[] = stack.map(
+        (x: RegExpMatchArray) => {
+          const identifier = x[1];
+          const pathlinecol = x[2].split(":");
+          const column =
+            pathlinecol.length > 2 ? parseInt(pathlinecol.pop() ?? "0") : 0;
+          const line =
+            pathlinecol.length > 1 ? parseInt(pathlinecol.pop() ?? "0") : 0;
+          const p = pathlinecol.join(":");
+          return {
+            "code.column.number": column,
+            "code.function.name": identifier,
+            "code.file.path": p,
+            "code.line.number": line,
+          };
+        },
+      );
       return detections[skipFrames] || {};
     } catch (error) {
       // If anything goes wrong, return empty object
