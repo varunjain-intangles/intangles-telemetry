@@ -36,7 +36,7 @@ export class CodeAttributes {
       // Use V8's stack trace API without creating an Error object
       const obj = {};
       Error.captureStackTrace(obj, this.getCodeAttributes);
-      const detectorRegex = /at (.+?) \((.+?)\)/;
+      const detectorRegex = /^\s*at\s+(?:(.+?)\s+)?\(?([^)]+)\)?$/;
 
       const stack = (obj as any).stack
         .split("\n")
