@@ -9,6 +9,7 @@ export interface InstrumentationConfig {
   endpoints?: Record<string, string>;
   autoInstrument?: boolean;
   instrumentations?: SupportedInstrumentation[];
+  injectCodeAttributes?: boolean;
 }
 
 // Supported OpenTelemetry instrumentations for Node.js

@@ -13,6 +13,9 @@ class CodeAttributes {
      * Extract code attributes from the call stack.
      * Skips a specified number of frames to account for the instrumentation layer.
      *
+     * Uses V8's stack trace API via Error.captureStackTrace() without creating
+     * an actual Error object.
+     *
      * @param skipFrames - Number of stack frames to skip (default: 3)
      *                    Accounts for: getCodeAttributes -> decorator -> actual code
      * @returns Object containing code location attributes following OpenTelemetry conventions
@@ -25,12 +28,14 @@ class CodeAttributes {
      */
     static getCodeAttributes(skipFrames = 3) {
         try {
-            // Get the current stack trace
-            const stack = new Error().stack || "";
+            // Use V8's stack trace API without creating an Error object
+            const obj = {};
+            Error.captureStackTrace(obj, this.getCodeAttributes);
+            const stack = obj.stack || "";
             const lines = stack.split("\n");
-            // Skip Error line and internal frames
+            // Skip internal frames (captureStackTrace adds the frame it's called from)
             // Frame format: "at functionName (path/to/file.ts:line:column)"
-            const targetLine = lines[skipFrames + 1]; // +1 for Error line
+            const targetLine = lines[skipFrames]; // No +1 needed as captureStackTrace already skips its own frame
             if (!targetLine) {
                 return {};
             }

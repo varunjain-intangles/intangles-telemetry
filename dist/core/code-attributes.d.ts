@@ -16,6 +16,9 @@ export declare class CodeAttributes {
      * Extract code attributes from the call stack.
      * Skips a specified number of frames to account for the instrumentation layer.
      *
+     * Uses V8's stack trace API via Error.captureStackTrace() without creating
+     * an actual Error object.
+     *
      * @param skipFrames - Number of stack frames to skip (default: 3)
      *                    Accounts for: getCodeAttributes -> decorator -> actual code
      * @returns Object containing code location attributes following OpenTelemetry conventions
