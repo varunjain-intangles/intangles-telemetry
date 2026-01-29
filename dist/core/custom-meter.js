@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CustomMeter = exports.CustomObservableUpDownCounter = exports.CustomObservableGauge = exports.CustomObservableCounter = exports.CustomUpDownCounter = exports.CustomHistogram = exports.CustomCounter = void 0;
+exports.CustomMeter = exports.CustomUpDownCounter = exports.CustomHistogram = exports.CustomCounter = void 0;
 class CustomCounter {
     constructor(otelCounter) {
         this.otelCounter = otelCounter;
@@ -28,15 +28,15 @@ class CustomUpDownCounter {
     }
 }
 exports.CustomUpDownCounter = CustomUpDownCounter;
-class CustomObservableCounter {
-}
-exports.CustomObservableCounter = CustomObservableCounter;
-class CustomObservableGauge {
-}
-exports.CustomObservableGauge = CustomObservableGauge;
-class CustomObservableUpDownCounter {
-}
-exports.CustomObservableUpDownCounter = CustomObservableUpDownCounter;
+// export class CustomObservableCounter implements ObservableCounter {
+//   // Simplified implementation - observable instruments are more complex
+// }
+// export class CustomObservableGauge implements ObservableGauge {
+//   // Simplified implementation - observable instruments are more complex
+// }
+// export class CustomObservableUpDownCounter implements ObservableUpDownCounter {
+//   // Simplified implementation - observable instruments are more complex
+// }
 class CustomMeter {
     constructor(otelMeter) {
         this.otelMeter = otelMeter;
@@ -52,18 +52,6 @@ class CustomMeter {
     createUpDownCounter(name, options) {
         const otelUpDownCounter = this.otelMeter.createUpDownCounter(name, options);
         return new CustomUpDownCounter(otelUpDownCounter);
-    }
-    createObservableCounter(name, options) {
-        // Simplified - would need callback implementation for full functionality
-        return new CustomObservableCounter();
-    }
-    createObservableGauge(name, options) {
-        // Simplified - would need callback implementation for full functionality
-        return new CustomObservableGauge();
-    }
-    createObservableUpDownCounter(name, options) {
-        // Simplified - would need callback implementation for full functionality
-        return new CustomObservableUpDownCounter();
     }
 }
 exports.CustomMeter = CustomMeter;

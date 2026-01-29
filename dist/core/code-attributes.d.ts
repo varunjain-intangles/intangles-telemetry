@@ -31,14 +31,6 @@ export declare class CodeAttributes {
      */
     static getCodeAttributes(skipFrames?: number): CodeAttributesData;
     /**
-     * Parse a single line from the stack trace to extract code attributes.
-     * Handles various stack trace formats.
-     *
-     * @param line - A single line from the stack trace
-     * @returns Parsed code attributes
-     */
-    private static parseStackLine;
-    /**
      * Get only the function name from code attributes.
      *
      * @param skipFrames - Number of stack frames to skip

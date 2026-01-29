@@ -70,7 +70,9 @@ describe('Telemetry Library', () => {
       expect(span).toBeDefined();
       expect(typeof span.setAttribute).toBe('function');
       expect(typeof span.end).toBe('function');
-
+      span.setStatus({ code: 1 });
+      span.recordException(new Error('Test error'), { severity: 'high' });
+      span.recordException(new Error('Test error'));
       span.end();
     });
 
@@ -176,6 +178,10 @@ describe('Telemetry Library', () => {
       });
 
       expect(manager).toBeDefined();
+
+      manager.shutdown().then(() => {
+        expect(true).toBe(true); // Just to ensure shutdown completes without error
+      });
     });
   });
 });

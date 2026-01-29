@@ -59,6 +59,20 @@ describe("Integration Tests - Console Traces Decorator Export", () => {
         // no-op
       });
     }
+    @SpanDecorator("decorated-operation-with-arguments", {
+      attributes: { component: "order-service" },
+    })
+    decoratedMethodWithArguments(
+      name: string = "default",
+      value: number = 1,
+      throwError: boolean = false,
+      objectArg?: { [key: string]: any }
+    ) {
+      
+        if (throwError) {
+          throw new Error("Test error from decorated method");
+        }
+      }
   }
 
   describe("Trace Publishing", () => {
@@ -75,7 +89,11 @@ describe("Integration Tests - Console Traces Decorator Export", () => {
       const testInstance = new TestClass();
       await testInstance.decoratedMethod();
       await testInstance.decoratedAsyncMethod();
+      await testInstance.decoratedMethodWithArguments("test-name", 42, false, { key: "value" });
 
+      try {
+        await testInstance.decoratedMethodWithArguments("test-name", 42, true);
+      } catch (e) {}
       // Wait a bit for async processing
       await flush();
       await new Promise((resolve) => setTimeout(resolve, 100));

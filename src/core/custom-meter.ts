@@ -9,9 +9,9 @@ import {
   Counter,
   Histogram,
   UpDownCounter,
-  ObservableCounter,
-  ObservableGauge,
-  ObservableUpDownCounter,
+  // ObservableCounter,
+  // ObservableGauge,
+  // ObservableUpDownCounter,
   MetricOptions,
 } from "../types/meter";
 
@@ -60,17 +60,17 @@ export class CustomUpDownCounter implements UpDownCounter {
   }
 }
 
-export class CustomObservableCounter implements ObservableCounter {
-  // Simplified implementation - observable instruments are more complex
-}
+// export class CustomObservableCounter implements ObservableCounter {
+//   // Simplified implementation - observable instruments are more complex
+// }
 
-export class CustomObservableGauge implements ObservableGauge {
-  // Simplified implementation - observable instruments are more complex
-}
+// export class CustomObservableGauge implements ObservableGauge {
+//   // Simplified implementation - observable instruments are more complex
+// }
 
-export class CustomObservableUpDownCounter implements ObservableUpDownCounter {
-  // Simplified implementation - observable instruments are more complex
-}
+// export class CustomObservableUpDownCounter implements ObservableUpDownCounter {
+//   // Simplified implementation - observable instruments are more complex
+// }
 
 export class CustomMeter implements Meter {
   private otelMeter: OTelMeter;
@@ -94,27 +94,27 @@ export class CustomMeter implements Meter {
     return new CustomUpDownCounter(otelUpDownCounter);
   }
 
-  createObservableCounter(
-    name: string,
-    options?: MetricOptions,
-  ): ObservableCounter {
-    // Simplified - would need callback implementation for full functionality
-    return new CustomObservableCounter();
-  }
+  // createObservableCounter(
+  //   name: string,
+  //   options?: MetricOptions,
+  // ): ObservableCounter {
+  //   // Simplified - would need callback implementation for full functionality
+  //   return new CustomObservableCounter();
+  // }
 
-  createObservableGauge(
-    name: string,
-    options?: MetricOptions,
-  ): ObservableGauge {
-    // Simplified - would need callback implementation for full functionality
-    return new CustomObservableGauge();
-  }
+  // createObservableGauge(
+  //   name: string,
+  //   options?: MetricOptions,
+  // ): ObservableGauge {
+  //   // Simplified - would need callback implementation for full functionality
+  //   return new CustomObservableGauge();
+  // }
 
-  createObservableUpDownCounter(
-    name: string,
-    options?: MetricOptions,
-  ): ObservableUpDownCounter {
-    // Simplified - would need callback implementation for full functionality
-    return new CustomObservableUpDownCounter();
-  }
+  // createObservableUpDownCounter(
+  //   name: string,
+  //   options?: MetricOptions,
+  // ): ObservableUpDownCounter {
+  //   // Simplified - would need callback implementation for full functionality
+  //   return new CustomObservableUpDownCounter();
+  // }
 }

@@ -59,39 +59,6 @@ class CodeAttributes {
         }
     }
     /**
-     * Parse a single line from the stack trace to extract code attributes.
-     * Handles various stack trace formats.
-     *
-     * @param line - A single line from the stack trace
-     * @returns Parsed code attributes
-     */
-    static parseStackLine(line) {
-        const attributes = {};
-        // Extract function name (comes after "at ")
-        const functionMatch = line.match(/at\s+(.+?)\s+\(/);
-        if (functionMatch) {
-            const functionName = functionMatch[1].trim();
-            // Handle class methods (e.g., "ClassName.methodName")
-            attributes["code.function.name"] = functionName;
-        }
-        // Extract file path and location (line:column)
-        // Match pattern: (path/to/file.ts:123:45)
-        const locationMatch = line.match(/\(([^:]+):(\d+):(\d+)\)/);
-        if (locationMatch) {
-            attributes["code.file.path"] = locationMatch[1];
-            attributes["code.line.number"] = parseInt(locationMatch[2], 10);
-            attributes["code.column.number"] = parseInt(locationMatch[3], 10);
-        }
-        else {
-            // Fallback: try to match just the file path
-            const fileMatch = line.match(/\(([^:)]+)\)/);
-            if (fileMatch) {
-                attributes["code.file.path"] = fileMatch[1];
-            }
-        }
-        return attributes;
-    }
-    /**
      * Get only the function name from code attributes.
      *
      * @param skipFrames - Number of stack frames to skip

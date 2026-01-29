@@ -13,9 +13,9 @@
   },
   "scripts": {
     "build": "tsc",
-    "test": "jest --runInBand",
+    "test": "jest --runInBand --coverage",
     "test:integration": "jest --testPathPattern=integration --runInBand ",
-    "test:integration_specific": "jest --runInBand --runTestsByPath test/code-attributes.test.ts",
+    "test:integration_specific": "jest --runInBand --runTestsByPath test/integration/console-export-otlp.test.ts",
     "test:integration_manual": "jest --runInBand --runTestsByPath test/integration/console-export.test.ts",
     "test:unit": "jest --testPathPattern=telemetry.test.ts",
     "lint": "eslint src/**/*.ts",

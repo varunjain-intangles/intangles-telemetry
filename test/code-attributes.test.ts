@@ -49,20 +49,27 @@ describe("CodeAttributes", () => {
     test("should handle different skip frame counts", () => {
       const attrs1 = CodeAttributes.getCodeAttributes(1);
       const attrs2 = CodeAttributes.getCodeAttributes(3);
+      const attrs3 = CodeAttributes.getCodeAttributes();
 
       // Both should return objects
       expect(attrs1).toBeDefined();
       expect(attrs2).toBeDefined();
+      expect(attrs3).toBeDefined();
     });
   });
 
   describe("getFunctionName", () => {
     test("should return function name or undefined", () => {
       const functionName = CodeAttributes.getFunctionName(2);
+      const functionName2 = CodeAttributes.getFunctionName();
 
       if (functionName) {
         expect(typeof functionName).toBe("string");
         expect(functionName.length).toBeGreaterThan(0);
+      }
+      if (functionName2) {
+        expect(typeof functionName2).toBe("string");
+        expect(functionName2.length).toBeGreaterThan(0);
       }
     });
   });
@@ -70,10 +77,15 @@ describe("CodeAttributes", () => {
   describe("getFilePath", () => {
     test("should return file path or undefined", () => {
       const filePath = CodeAttributes.getFilePath(2);
+      const filePath2 = CodeAttributes.getFilePath();
 
       if (filePath) {
         expect(typeof filePath).toBe("string");
         expect(filePath.length).toBeGreaterThan(0);
+      }
+      if (filePath2) {
+        expect(typeof filePath2).toBe("string");
+        expect(filePath2.length).toBeGreaterThan(0);
       }
     });
   });
@@ -81,10 +93,15 @@ describe("CodeAttributes", () => {
   describe("getLineNumber", () => {
     test("should return line number or undefined", () => {
       const lineNumber = CodeAttributes.getLineNumber(2);
+      const lineNumber2 = CodeAttributes.getLineNumber();
 
       if (lineNumber) {
         expect(typeof lineNumber).toBe("number");
         expect(lineNumber).toBeGreaterThan(0);
+      }
+      if (lineNumber2) {
+        expect(typeof lineNumber2).toBe("number");
+        expect(lineNumber2).toBeGreaterThan(0);
       }
     });
   });
@@ -92,10 +109,15 @@ describe("CodeAttributes", () => {
   describe("getColumnNumber", () => {
     test("should return column number or undefined", () => {
       const columnNumber = CodeAttributes.getColumnNumber(2);
+      const columnNumber2 = CodeAttributes.getColumnNumber();
 
       if (columnNumber) {
         expect(typeof columnNumber).toBe("number");
         expect(columnNumber).toBeGreaterThan(0);
+      }
+      if (columnNumber2) {
+        expect(typeof columnNumber2).toBe("number");
+        expect(columnNumber2).toBeGreaterThan(0);
       }
     });
   });
@@ -117,6 +139,21 @@ describe("CodeAttributes", () => {
       // Should have captured line number and file path
       expect(attributes["code.line.number"]).toBeDefined();
       expect(attributes["code.file.path"]).toBeDefined();
+    });
+  });
+
+  describe("Exception with real code", () => {
+    test("should capture code attributes during function execution", () => {
+      function myTestFunction() {
+        // Get attributes from within the function
+        return CodeAttributes.getCodeAttributes(100);
+      }
+
+      const attributes = myTestFunction();
+
+      // Should have captured line number and file path
+      expect(attributes["code.line.number"]).toBeUndefined();
+      expect(attributes["code.file.path"]).toBeUndefined();
     });
   });
 });

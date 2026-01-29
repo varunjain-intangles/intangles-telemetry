@@ -16,4 +16,5 @@ module.exports = {
   setupFilesAfterEnv: ['<rootDir>/test/setup.ts'],
   setupFiles: ["dotenv/config"],
   "verbose": true,
+  coverageReporters: ["text", "lcov", "clover"]
 };

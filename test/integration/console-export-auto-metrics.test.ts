@@ -123,5 +123,44 @@ describe("Integration Tests - Console Metrics Export", () => {
 
       expect(histogramObjects.length).toBeGreaterThan(0);
     }, 5000);
+
+    test("should publish up/down counter metrics to console", async () => {
+      const val = dotenv.config({
+        path: "./test/integration/.test.metrics.env",
+      });
+
+      initInstrumentation({
+        serviceName: "integration-test-service",
+        exporters: { metrics: "console" },
+        autoInstrument: true,
+      });
+
+      const meter = getMeter("test-component");
+      expect(meter).toBeDefined();
+
+      const counter = meter!.createUpDownCounter("test_counter", {
+        description: "Test counter for integration",
+      });
+
+      // Record some metrics
+      counter.add(5, { environment: "test", version: "1.0" });
+      counter.add(-3, { environment: "test", version: "1.0" });
+
+      await flush();
+      // Wait for metrics to be exported (console exporter uses PeriodicExportingMetricReader with 10s interval)
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // Check that metrics were logged
+      const allMetricOutput = Object.values(capturedOutput).flat().flat();
+      const metricObjects = allMetricOutput.filter(
+        (item) =>
+          typeof item === "object" &&
+          item &&
+          item.descriptor &&
+          item.descriptor.name === "test_counter",
+      );
+
+      expect(metricObjects.length).toBeGreaterThan(0);
+    }, 5000);
   });
 });

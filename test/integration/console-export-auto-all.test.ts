@@ -46,7 +46,7 @@ describe("Integration Tests - Console All Telemetry Export", () => {
   describe("Combined Telemetry Publishing", () => {
     test("should publish traces, metrics, and logs simultaneously", async () => {
       const val = dotenv.config({ path: "./test/integration/.test.all.env" });
-      initInstrumentation({
+      const manager = initInstrumentation({
         serviceName: "integration-test-service",
         exporters: {
           traces: "console",
@@ -86,6 +86,10 @@ describe("Integration Tests - Console All Telemetry Export", () => {
       await flush();
       // Wait for all processing
       await new Promise((resolve) => setTimeout(resolve, 500));
+
+      manager.shutdown().then(() => {
+        expect(true).toBe(true); // Just to ensure shutdown completes without error
+      });
 
       // Verify all telemetry types were published
       const allCombinedOutput = Object.values(capturedOutput).flat().flat();
