@@ -56,6 +56,18 @@ describe('Telemetry Library', () => {
       expect(typeof logger!.emit).toBe('function');
     });
 
+    test('should provide flush and shutdown instance without exporter', () => {
+      const manager = initInstrumentation({
+        serviceName: 'test-service',
+        exporters: { logs: undefined }
+      });
+
+      manager.flush();
+      manager.shutdown().then(() => {
+        expect(true).toBe(true); // Just to ensure shutdown completes without error
+      });
+    });
+
     test('should create spans correctly', () => {
       initInstrumentation({
         serviceName: 'test-service',

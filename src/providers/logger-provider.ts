@@ -46,9 +46,9 @@ export class LogProvider {
       });
     }
 
-    ["SIGINT", "SIGTERM"].forEach((signal) => {
-      process.on(signal, () => this.provider?.shutdown().catch(console.error));
-    });
+    // ["SIGINT", "SIGTERM"].forEach((signal) => {
+    //   process.on(signal, () => this.provider?.shutdown().catch(console.error));
+    // });
 
     logs.setGlobalLoggerProvider(this.provider);
   }
@@ -70,9 +70,10 @@ export class LogProvider {
       });
     } else if (exporterType === "console") {
       exporter = new ConsoleLogRecordExporter();
-    } else {
-      console.warn(`Unsupported log exporter type: ${exporterType}`);
     }
+    // else {
+    //   console.warn(`Unsupported log exporter type: ${exporterType}`);
+    // }
 
     return exporter ? [new SimpleLogRecordProcessor(exporter)] : [];
   }
